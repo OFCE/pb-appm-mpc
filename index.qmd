@@ -241,13 +241,15 @@ Projets de mines en cours en Europe (définition large)
 
 ## Valoriser la souveraineté : le coût du CRM Act
 
-La notion de souveraineté est omniprésente dans les discours politiques sur les MPC, mais n'est jamais quantifiée économiquement. Comment évaluer le coût que l'Europe accepte de payer pour son autonomie stratégique ? @LeclercqOllivierPommeret2026 répondent à cette question en traitant la souveraineté comme le coût d'une contrainte de production domestique.
+La notion de souveraineté[^77] est omniprésente dans les discours politiques sur les MPC, mais n'est jamais quantifiée économiquement. Comment évaluer le coût que l'Europe accepte de payer pour son autonomie stratégique ? @LeclercqOllivierPommeret2026 répondent à cette question en traitant la souveraineté comme le coût d'une contrainte de production domestique.
 
 L'approche repose sur un raisonnement coût-efficacité : si l'UE s'impose une contrainte de production domestique alors que celle-ci est plus coûteuse que l'importation, c'est qu'elle estime implicitement que la souveraineté obtenue vaut au moins ce surcoût. Le coût de la contrainte devient ainsi une mesure plancher de la valeur de la souveraineté. C'est une approche descendante (top-down), analogue au prix tutélaire du carbone : plutôt que d'évaluer directement la valeur de l'autonomie stratégique (difficile à mesurer), on part de l'objectif politique et on en déduit le coût marginal.
 
 Le modèle est calibré sur le manganèse (minerai de l'aluminium) dans l'UE. Les simulations montrent que le coût courant de la contrainte --- la différence entre le coût de la solution avec raffinage domestique et celui du tout-importé --- augmente de façon convexe jusqu'en 2030, date d'entrée en vigueur de la contrainte de raffinage (40 %), où il atteint un pic de l'ordre de 30 millions d'euros avant de se stabiliser autour de 160 à 13 millions d'euros par an. Le niveau de consommation de manganèse en Europe à l'équilibre contraint est inférieur d'environ 3 % à celui qui prévaudrait sans contrainte.
 
 Ce chiffre est à interpréter soigneusement : il ne mesure pas ce que la souveraineté « vaut » aux décideurs européens, mais ce qu'ils acceptent de payer pour l'obtenir. C'est une mesure plancher --- si la souveraineté ne valait pas au moins ce montant, la politique serait sans fondement. Ce cadre analytique est applicable à l'ensemble des matières premières couvertes par le CRM Act[^8] et constitue un outil précieux pour évaluer la cohérence des politiques publiques.
+
+[^77]: Historiquement associé aux relations entre États [@philpottSovereigntyIntroductionBrief1995], le terme de souveraineté a été récemment utilisé comme synonyme d’« autonomie » ou d’« indépendance », en lien avec des domaines plus spécifiques tels que l’alimentation, l’énergie ou les ressources minérales. 
 
 [^8]: Le manganèse a été choisi en raison de la disponibilité des données, grâce au projet Chvaletice en République Tchèque.
 
