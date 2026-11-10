@@ -1,0 +1,142 @@
+name: Render & Deploy PB via FTP
+
+on:
+  # Décommenter pour activer le déclenchement automatique sur push vers main
+  # push:
+  #   branches:
+  #     - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render-deploy:
+    runs-on: ubuntu-latest
+    env:
+      TZ: Europe/Paris
+      STATICRYPT_PASSWORD: ${{ secrets.STATICRYPT_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.6'
+          use-public-rspm: true
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get install -y cmake gsfonts libcurl4-openssl-dev libgit2-dev libnode-dev pandoc
+          sudo apt-get install -y libmagick++-dev libudunits2-dev locales fonts-open-sans \
+            fonts-croscore libgdal-dev libgeos-dev libproj-dev
+          sudo locale-gen fr_FR.UTF-8
+          sudo update-locale LANG=fr_FR.UTF-8
+          fc-cache -fv
+
+      - name: Install Merriweather font (static, non-variable)
+        run: |
+          mkdir -p ~/.local/share/fonts/merriweather
+          # Google's distribution only ships variable fonts; use the static
+          # OpenType build from the CTAN TeX Live "merriweather" package instead.
+          base="https://tug.ctan.org/fonts/merriweather/opentype"
+          for style in Regular Bold Italic BoldItalic; do
+            curl -fsSL -o ~/.local/share/fonts/merriweather/Merriweather-$style.otf \
+              "$base/Merriweather-$style.otf"
+          done
+          fc-cache -fv ~/.local/share/fonts
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install R packages via renv
+        uses: r-lib/actions/setup-renv@v2
+
+      - name: Render PB
+        env:
+          DEPLOY_PAT: ${{ secrets.DEPLOY_PAT }}
+          GITHUB_PAT: ${{ secrets.GH_PAT }}
+        run: Rscript -e "ofceweb::render(check_repo = FALSE, render_site = FALSE, site2branch = FALSE)"
+
+      # - name: Chiffrement staticrypt (si STATICRYPT_PASSWORD défini)
+      #   run: |
+      #     if [ -z "$STATICRYPT_PASSWORD" ]; then
+      #       echo "STATICRYPT_PASSWORD absent — déploiement sans chiffrement."
+      #     else
+      #       npm install -g staticrypt
+      #       mkdir -p /tmp/staticrypt_out
+      #       staticrypt ./_site/* \
+      #         --recursive \
+      #         --directory /tmp/staticrypt_out/ \
+      #         --password "$STATICRYPT_PASSWORD" \
+      #         --short \
+      #         --template-color-primary "#e6142d" \
+      #         --template-color-secondary "#f9f9f3" \
+      #         --template-title "Accès restreint" \
+      #         --template-instructions "Entrez le mot de passe ou contactez un responsable de la page que vous souhaitez atteindre." \
+      #         --template-button "Accès"
+      #       cp -r /tmp/staticrypt_out/. ./_site/
+      #     fi
+
+      - name: Restaurer l'état FTP depuis site-deploy
+        run: |
+          git fetch origin site-deploy --depth=1 2>/dev/null || true
+          if git ls-remote --exit-code origin site-deploy >/dev/null 2>&1; then
+            git worktree add /tmp/ftp-state-wt origin/site-deploy 2>/dev/null || true
+            if [ -f /tmp/ftp-state-wt/.ftp-deploy-sync-state.json ]; then
+              cp /tmp/ftp-state-wt/.ftp-deploy-sync-state.json _site/.ftp-deploy-sync-state.json
+              echo "État FTP restauré — déploiement différentiel activé."
+            else
+              echo "Aucun état FTP trouvé — déploiement complet."
+            fi
+            git worktree remove /tmp/ftp-state-wt --force 2>/dev/null || true
+          else
+            echo "Branche site-deploy absente — déploiement complet."
+          fi
+
+      - name: FTP deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server:    ${{ secrets.FTP_SERVER }}
+          username:  ${{ secrets.PB_USER }}
+          password:  ${{ secrets.PB_PASSWORD }}
+          port: 21
+          local-dir: ./_site/
+          server-dir: ${{ vars.FTP_SERVER_DIR }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            CNAME
+            robots.txt
+
+      - name: Sauvegarder l'état FTP dans site-deploy
+        run: |
+          STATE="_site/.ftp-deploy-sync-state.json"
+          if [ ! -f "$STATE" ]; then
+            echo "Pas de fichier d'état FTP généré."
+            exit 0
+          fi
+          git fetch origin site-deploy --depth=1 2>/dev/null || true
+          if git ls-remote --exit-code origin site-deploy >/dev/null 2>&1; then
+            git worktree add /tmp/ftp-state-wt origin/site-deploy
+          else
+            git worktree add --detach /tmp/ftp-state-wt
+            git -C /tmp/ftp-state-wt checkout --orphan ftp-state-init
+            git -C /tmp/ftp-state-wt rm -rf . 2>/dev/null || true
+          fi
+          cp "$STATE" /tmp/ftp-state-wt/.ftp-deploy-sync-state.json
+          git -C /tmp/ftp-state-wt add .ftp-deploy-sync-state.json
+          if ! git -C /tmp/ftp-state-wt diff --staged --quiet; then
+            git -C /tmp/ftp-state-wt commit -m "ftp state ${{ github.run_id }}"
+            git -C /tmp/ftp-state-wt push origin HEAD:site-deploy
+          fi
+          git worktree remove /tmp/ftp-state-wt --force

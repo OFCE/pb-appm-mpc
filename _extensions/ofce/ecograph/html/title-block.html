@@ -1,0 +1,42 @@
+$if(title)$
+<header id="title-block-header" class="quarto-title-block default$if(title-block-categories)$ quarto-title-block-categories$endif$">
+
+<div class="quarto-title">
+<h1 class="title">$title$</h1>
+$if(nb)$
+<p class="subtitle ecographe-number">EcoGraph n°$nb$ (IFE - <span id="pub-year"></span>)</p>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var dateEl = document.querySelector('.date');
+    if (dateEl) {
+      var dateText = dateEl.textContent;
+      var year = dateText.match(/\d{4}/);
+      if (year) document.getElementById('pub-year').textContent = year[0];
+    }
+    var formatLinks = document.querySelectorAll('.quarto-alternate-formats a');
+    formatLinks.forEach(function(link) {
+      if (link.textContent.includes('Typst')) {
+        link.innerHTML = link.innerHTML.replace(/Typst \(ecograph\)/i, 'PDF du Graphique');
+      }
+    });
+  });
+</script>
+$endif$
+$if(subtitle)$
+<p class="subtitle">$subtitle$</p>
+$endif$
+$if(title-block-categories)$
+$if(categories)$
+<div class="quarto-categories">
+$for(categories)$
+<a href=".#category=$it$" class="quarto-category">$it$</a>
+$endfor$
+</div>
+$endif$
+$endif$
+</div>
+
+$title-metadata.html()$
+
+</header>
+$endif$

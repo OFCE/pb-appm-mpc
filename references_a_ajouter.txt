@@ -1,0 +1,117 @@
+RÉFÉRENCES À AJOUTER À LA MAIN (points 5 à 7 de la revue des citations)
+=========================================================================
+
+Pour chaque référence : (a) l'entrée BibTeX à coller dans references.bib,
+(b) la modification à faire dans index.qmd.
+
+Les entrées utilisent @article ou @techreport : avec le style du projet, les
+types @misc et @unpublished font apparaître une ponctuation parasite « », ».
+
+ATTENTION : les champs marqués « À VÉRIFIER » n'ont pas pu être contrôlés à la
+source pendant la revue. Merci de les confirmer avant de publier.
+
+
+-------------------------------------------------------------------------
+5. Source de la fig. 3 (index.qmd, ligne 216)
+-------------------------------------------------------------------------
+
+Texte actuel :
+  *Source :* European Commission, Study on the EU's list of CRM (2020).
+
+(a) BibTeX :
+
+@techreport{CE2020,
+  author      = {{Commission européenne}},
+  title       = {Study on the EU's List of Critical Raw Materials (2020): Final Report},
+  year        = {2020},
+  institution = {{Direction générale du marché intérieur, de l'industrie, de l'entrepreneuriat et des PME (DG GROW), Office des publications de l'Union européenne}},
+  doi         = {10.2873/11619}
+}
+
+  À VÉRIFIER :
+  - le DOI (10.2873/11619 de mémoire, non confirmé) ;
+  - le document exact d'où vient la carte. La même carte (« Biggest supplier
+    countries of CRMs to the EU », avec les parts « EU sourcing ») figure aussi
+    dans la communication COM(2020) 474, « Critical Raw Materials Resilience:
+    Charting a Path towards greater Security and Sustainability ». Si c'est
+    celle-là la vraie source, utiliser plutôt :
+
+@techreport{CE2020Resilience,
+  author      = {{Commission européenne}},
+  title       = {Critical Raw Materials Resilience: Charting a Path towards greater Security and Sustainability},
+  year        = {2020},
+  type        = {Communication de la Commission},
+  institution = {{COM(2020) 474 final, 3 septembre 2020}},
+  url         = {https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:52020DC0474}
+}
+
+(b) Nouveau texte dans index.qmd :
+  *Source :* @CE2020.
+
+
+-------------------------------------------------------------------------
+6. Source de la fig. 4 (index.qmd, ligne 262)
+-------------------------------------------------------------------------
+
+Texte actuel :
+  *Source :* @BastianinDelBoShamsudin2025, based on data from Owen, J.R., Lèbre, É. and Kemp, D. (2022).
+
+(a) BibTeX :
+
+@article{OwenLebreKemp2022,
+  author  = {Owen, John R. and Lèbre, Éléonore and Kemp, Deanna},
+  title   = {Energy Transition Minerals and Their Intersection with Land-Connected Peoples},
+  year    = {2023},
+  journal = {Nature Sustainability},
+  volume  = {6},
+  pages   = {203--211},
+  doi     = {10.1038/s41893-022-00994-6}
+}
+
+  À VÉRIFIER :
+  - que c'est bien cet article qui est cité par Bastianin, Del Bo & Shamsudin
+    comme source des données (voir leur bibliographie) ;
+  - le volume, les pages et le DOI (de mémoire, non confirmés) ;
+  - l'année : l'article est paru en ligne fin 2022 (d'où le « 2022 » de la
+    figure d'origine) et dans le numéro de 2023. Mettre year = {2022} si l'on
+    veut garder la date de la figure d'origine.
+
+(b) Nouveau texte dans index.qmd :
+  *Source :* @BastianinDelBoShamsudin2025, d'après les données de @OwenLebreKemp2022.
+
+
+-------------------------------------------------------------------------
+7. Le CRM Act dans les notes [^1], [^2] et [^3] (index.qmd, lignes 61, 63 et 67)
+-------------------------------------------------------------------------
+
+Textes actuels :
+  [^1]: Voir la liste mise à jour dans le CRM Act de l'UE [ici](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401252), Annexe II.
+  [^2]: Voir [ici](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401252), Annexe I.
+  [^3]: Voir le CRM Act de l'UE, ici          <- « ici » n'a pas de lien
+
+(a) BibTeX :
+
+@techreport{UE2024CRMA,
+  author      = {{Parlement européen et Conseil de l'Union européenne}},
+  title       = {Règlement (UE) 2024/1252 du 11 avril 2024 établissant un cadre visant à garantir un approvisionnement sûr et durable en matières premières critiques (Critical Raw Materials Act)},
+  year        = {2024},
+  type        = {Journal officiel de l'Union européenne},
+  institution = {{L, 2024/1252, 3 mai 2024}},
+  url         = {https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=OJ:L_202401252}
+}
+
+  À VÉRIFIER : les dates (adoption le 11 avril 2024, publication au JO le
+  3 mai 2024) et l'intitulé complet du règlement.
+
+  Remarque : avec un auteur aussi long, la citation dans le texte sera longue
+  (« Parlement européen et Conseil de l'Union européenne (2024) »). Pour la
+  raccourcir, mettre author = {{UE}} : la citation devient « UE (2024) ».
+
+(b) Nouveaux textes dans index.qmd :
+  [^1]: Voir la liste mise à jour à l'annexe II du CRM Act [@UE2024CRMA].
+  [^2]: Voir l'annexe I du CRM Act [@UE2024CRMA].
+  [^3]: Voir le CRM Act [@UE2024CRMA].   <- à préciser : quel passage du CRM Act
+        (ou quel document d'accompagnement) donne les multiplications par 6/7
+        (terres rares) et 12/21 (lithium) ? Ces chiffres ne sont peut-être pas
+        dans le règlement lui-même mais dans un document qui l'accompagne,
+        par exemple l'étude d'impact ou la communication.

@@ -1,0 +1,50 @@
+name: PB staging — redirection stable FTP
+
+on:
+  push:
+    branches: [site-staging-redirect]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout site-staging-redirect branch
+        uses: actions/checkout@v4
+        with:
+          ref: site-staging-redirect
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: FTP deploy (staging redirect)
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server:   ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.STAGING_USER }}
+          password: ${{ secrets.STAGING_PASSWORD }}
+          port: 21
+          local-dir: ./
+          server-dir: ${{ vars.FTP_STAGING_REDIRECT_DIR }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+
+      - name: Commit FTP state back to site-staging-redirect
+        run: |
+          git add .ftp-deploy-sync-state.json
+          if git diff --staged --quiet; then
+            echo "No FTP state changes"
+          else
+            git commit -m "ftp state ${{ github.run_id }}"
+            git push
+          fi

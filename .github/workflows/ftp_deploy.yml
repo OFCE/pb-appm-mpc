@@ -1,0 +1,101 @@
+name: FTP deploy PB from site-deploy branch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    env:
+      STATICRYPT_PASSWORD: ${{ secrets.STATICRYPT_PASSWORD }}
+
+    steps:
+      - name: Checkout site-deploy branch
+        uses: actions/checkout@v7
+        with:
+          ref: site-deploy
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure git identity
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Vérification anti-collision (numéro de PB déjà publié par un autre dépôt)
+        run: |
+          if [ -z "${{ vars.FTP_SERVER_DIR }}" ]; then
+            echo "FTP_SERVER_DIR non défini — vérification ignorée."
+            exit 0
+          fi
+          TARGET_URL="https://www.ofce.fr/pb/${{ vars.FTP_SERVER_DIR }}manifest.json"
+          REMOTE_JSON=$(curl -fsSL "$TARGET_URL" || true)
+          if [ -z "$REMOTE_JSON" ]; then
+            echo "Aucun manifest.json existant à $TARGET_URL — premier déploiement à cet emplacement, ok."
+            exit 0
+          fi
+          REMOTE_REPO=$(echo "$REMOTE_JSON" | jq -r '."source-repo" // empty')
+          if [ -z "$REMOTE_REPO" ]; then
+            echo "manifest.json existant sans champ source-repo (déploiement antérieur à ce contrôle) — vérification ignorée."
+            exit 0
+          fi
+          # Comparaison insensible à la casse : GitHub traite owner/repo sans
+          # tenir compte de la casse, mais source-repo est écrit tel que
+          # résolu localement (gh_slug_from_remote()) au moment du déploiement
+          # d'origine — une divergence de casse ne doit pas déclencher un faux
+          # positif d'anti-collision.
+          if [ "$(echo "$REMOTE_REPO" | tr '[:upper:]' '[:lower:]')" != "$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')" ]; then
+            echo "::error::$TARGET_URL appartient déjà au dépôt '$REMOTE_REPO' — attendu '${{ github.repository }}'. Déploiement annulé pour éviter d'écraser un PB existant."
+            exit 1
+          fi
+          echo "Propriété confirmée pour ${{ github.repository }}."
+
+      # - name: Chiffrement staticrypt (si STATICRYPT_PASSWORD défini)
+      #   run: |
+      #     if [ -z "$STATICRYPT_PASSWORD" ]; then
+      #       echo "STATICRYPT_PASSWORD absent — déploiement sans chiffrement."
+      #     else
+      #       npm install -g staticrypt
+      #       mkdir -p /tmp/staticrypt_out
+      #       staticrypt ./* \
+      #         --recursive \
+      #         --directory /tmp/staticrypt_out/ \
+      #         --password "$STATICRYPT_PASSWORD" \
+      #         --short \
+      #         --template-color-primary "#e6142d" \
+      #         --template-color-secondary "#f9f9f3" \
+      #         --template-title "Accès restreint" \
+      #         --template-instructions "Entrez le mot de passe ou contactez un responsable de la page que vous souhaitez atteindre." \
+      #         --template-button "Accès"
+      #       cp -r /tmp/staticrypt_out/. ./
+      #     fi
+
+      - name: FTP deploy
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server:   ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.PB_USER }}
+          password: ${{ secrets.PB_PASSWORD }}
+          port: 21
+          local-dir: ./
+          server-dir: ${{ vars.FTP_SERVER_DIR }}
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            CNAME
+            robots.txt
+
+      - name: Commit FTP state back to site-deploy
+        run: |
+          git add .ftp-deploy-sync-state.json
+          if git diff --staged --quiet; then
+            echo "No FTP state changes"
+          else
+            git commit -m "ftp state ${{ github.run_id }}"
+            git push
+          fi

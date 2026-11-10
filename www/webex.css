@@ -1,0 +1,182 @@
+
+:root {
+  --incorrect: #983E82;
+  --incorrect_alpha: #edaddd;
+  --correct: #59935B;
+  --correct_alpha: #c0edc2;
+  --highlight: #e6142d;
+}
+
+.webex-check {}
+
+.webex-box {
+  border: 2px solid var(--highlight);
+  padding: 0.5em 0.25em;
+  margin: 1em 0;
+  border-radius: .25em;
+  background-color: #e6142d05;
+}
+
+.webex-total_correct {
+  margin-left: 1em;
+}
+
+.unchecked .webex-total_correct {
+  display: none;
+}
+
+.unchecked .webex-incorrect,
+.unchecked .webex-correct {
+  border: 2px dotted grey !important;
+  background-color: white !important;
+}
+
+/* styles for webex-solveme */
+.webex-select, input.webex-solveme,
+.unchecked .webex-radiogroup label.webex-incorrect,
+.unchecked .webex-radiogroup label.webex-correct{
+    border: 2px dotted grey;
+    background-color: white;
+    border-radius: 0.25em;
+}
+
+.webex-incorrect,
+input.webex-solveme.webex-incorrect,
+.webex-radiogroup label.webex-incorrect {
+    border: 2px dotted var(--incorrect);
+    background-color: var(--incorrect_alpha);
+    color: black;
+    border-radius: 0.25em;
+}
+.webex-correct,
+input.webex-solveme.webex-correct,
+.webex-radiogroup label.webex-correct {
+    border: 2px solid var(--correct);
+    background-color: var(--correct_alpha);
+    color: black;
+    border-radius: 0.25em;
+}
+
+.unchecked .webex-incorrect span::before,
+.unchecked .webex-incorrect + .webex-icon::after,
+.unchecked .webex-correct span::before,
+.unchecked .webex-correct + .webex-icon::after {
+  content: "  ";
+}
+
+.webex-incorrect span::before,
+.webex-incorrect + .webex-icon::after {
+  content: "\274C  ";
+}
+
+.webex-correct span::before,
+.webex-correct + .webex-icon::after {
+  content: "\2705  ";
+}
+
+
+/* styles for hidden solutions */
+.webex-solution {
+    height: 2.5em;
+    overflow-y: hidden;
+    padding: 0.5em;
+    margin-bottom: 10px;
+}
+.webex-solution.open {
+    height: auto;
+    border: 2px solid var(--highlight);
+    border-radius: 5px;
+}
+.webex-solution button, .webex-check-button {
+    height: 2em;
+    margin-bottom: 0.5em;
+    border-radius: 0.5em;
+    background-color: var(--highlight);
+    color: white;
+    padding: 0 0.5em;
+}
+.webex-solution pre.sourceCode {
+    border-color: var(--correct);
+}
+
+.webex-radiogroup label {
+  margin-left: 2em;
+  text-indent: -1em;
+  padding-left: 0.5em;
+  font-weight: 400;
+  display: block;
+  border: 2px solid rgba(255, 255, 255, 0);
+  background-color: inherit;
+  border-radius: 0.25em;
+}
+
+.webex-radiogroup label input {
+  position: relative;
+  left: -1em;
+}
+
+.webex-radiogroup {
+  margin: 1em 0;
+}
+
+.callout.enc-preview .callout-body-container {
+  max-height: 7.5em;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  transition: max-height 0.35s ease;
+}
+.callout.enc-preview.enc-expanded .callout-body-container {
+  max-height: 9999px;
+  overflow: visible;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+.enc-preview-btn {
+  display: inline-block;
+  margin: 0.2em 0 0.5em 0.1em;
+  font-size: 0.85em;
+  cursor: pointer;
+  color: #0d6efd;
+  background: none;
+  border: none;
+  padding: 0;
+}
+.enc-preview-btn.enc-close-btn {
+  display: none;
+}
+.callout.enc-preview.enc-expanded .enc-preview-btn.enc-open-btn {
+  display: none;
+}
+.callout.enc-preview.enc-expanded .enc-preview-btn.enc-close-btn {
+  display: inline-block;
+}
+
+/* Tabset : supprime fond gris des panneaux */
+//.panel-tabset > .tab-content {
+//  background: none;
+//  border: none;
+//  padding: 0;
+//}
+//.panel-tabset .tab-pane {
+//  background: none;
+//  border: none;
+//  padding: 0;
+//}
+
+/* Tabset : onglet actif neutre (supprime le fond rouge/couleur OFCE) */
+//.panel-tabset .nav-link.active,
+//.panel-tabset .nav-link:focus,
+//.panel-tabset .nav-link:active {
+//  background-color: transparent !important;
+//  color: #333333 !important;
+//  border-bottom: 2px solid #333333 !important;
+//  border-radius: 0 !important;
+//}
+//.panel-tabset .nav-link {
+//  color: #666666;
+//}
+//.panel-tabset .nav-link:hover {
+//  color: #333333;
+//  background-color: transparent !important;
+//} */

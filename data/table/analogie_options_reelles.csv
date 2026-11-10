@@ -1,0 +1,6 @@
+element,option_achat,reserve_petroliere,mine_non_developpee
+Prix de l'actif,Valeur de l'option,Valeur de la réserve,Valeur de la mine ouverte
+Prix d'exercice,Prix d'exercice de l'option,Coût de développement,Coût d'ouverture
+Expiration,Date d'expiration,Concession légale,Contrainte d'acceptabilité ?
+Volatilité,Volatilité du sous-jacent,Volatilité du prix du pétrole,Volatilité des prix des MPC (géopolitique)
+Dividende,Dividende de l'actif,Revenu net de production,Revenu net de production

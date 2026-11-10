@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "id": null,
+  "translation_id": null,
+  "institution": "ofce",
+  "type": "policy-brief",
+  "media": "html",
+  "lang": "fr",
+  "title": "Matières premières critiques et souveraineté européenne: Vers l'ouverture de mines en Europe ?",
+  "authors": [
+    "Aude Pommeret",
+    "Paul Malliet"
+  ],
+  "abstract": null,
+  "categories": [],
+  "keywords": [],
+  "jel": [],
+  "date_published": "2026-10-10",
+  "date_modified": "2026-11-10",
+  "url": "https://staging.ofce.fr/pb-appm-mpc/v0/",
+  "pdf": null,
+  "repo": "https://github.com/OFCE/pb-appm-mpc/",
+  "auto_update": true,
+  "pb": null,
+  "pb_series": "ife",
+  "version": "v0",
+  "stage": true,
+  "pdf-path": null,
+  "source-repo": "OFCE/pb-appm-mpc",
+  "ofceweb-version": "1.0.6"
+}

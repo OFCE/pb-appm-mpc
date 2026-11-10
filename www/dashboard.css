@@ -1,0 +1,138 @@
+/* Remove card padding for interactive ggiraph widgets to maximize space */
+.girafe.html-fill-item {
+  padding: 0 !important;
+}
+
+/* Target the card-body that contains the girafe widget */
+.card:has(.girafe.html-fill-item) .card-body {
+  padding: 0 !important;
+}
+
+/* Re-apply padding to other cards if needed, 
+   but since the ggiraph widgets are the primary content, 
+   this is the most direct way to fix the whitespace issue. */
+
+/* The container only needs full width so rescale=TRUE can measure it.
+   Do NOT set height here — ggiraph's JS sets the SVG height from the
+   viewBox ratio, and an explicit height: 100% collapses the chain when
+   the parent has no defined height (tiny chart on desktop). */
+.girafe_container_std {
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Adapt gt ihtml tables to fill their card width.
+   ihtml tables render as htmlwidgets with class "gt". */
+.html-widget.gt {
+  width: 100% !important;
+}
+
+/* On mobile: allow horizontal scroll rather than overflow */
+@media (max-width: 768px) {
+  .html-widget.gt {
+    overflow-x: auto !important;
+  }
+}
+
+/* In full-screen mode the card is 100vh, so fill works */
+.bslib-card[data-full-screen="true"] .card-body,
+.bslib-card[data-full-screen="true"] .cell-output-display {
+  height: 100%;
+}
+.bslib-card[data-full-screen="true"] .girafe.html-fill-item {
+  height: 100% !important;
+}
+
+/* ── Tabset styling: white background, red underline, no borders ── */
+
+/* Remove card border and shadow */
+.card.tabset.bslib-card {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* White header, no bottom line */
+.card.tabset .card-header {
+  background-color: #ffffff !important;
+  border-bottom: none !important;
+}
+
+/* Remove the default nav-tabs bottom rule */
+.card.tabset .nav-tabs {
+  border-bottom: none !important;
+}
+
+/* Tab links: no box borders, transparent bg, subtle bottom placeholder */
+.card.tabset .nav-tabs .nav-link {
+  border: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  color: #555 !important;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+/* Active tab: red underline only */
+.card.tabset .nav-tabs .nav-link.active {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid #e6142d !important;
+  color: #111 !important;
+}
+
+/* Hover: faint red preview */
+.card.tabset .nav-tabs .nav-link:hover:not(.active) {
+  border-bottom: 2px solid #C9427766 !important;
+  color: #111 !important;
+}
+
+.quarto-dashboard .bslib-value-box .value-box-value {
+    font-size: clamp(.1em,9cqw,4em)
+}
+
+.quarto-dashboard .bslib-value-box .value-box-area {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+    font-size: .8rem;
+    font-weight: 500;
+}
+
+/* ── Brighter semantic card / value-box colors ── */
+
+.bslib-value-box.bg-primary,
+.card.bg-primary {
+  background-color: #4f8ef7 !important;
+  color: #fff !important;
+}
+
+.bslib-value-box.bg-success,
+.card.bg-success {
+  background-color: #22c55e !important;
+  color: #fff !important;
+}
+
+.bslib-value-box.bg-danger,
+.card.bg-danger {
+  background-color: #f43f5e !important;
+  color: #fff !important;
+}
+
+.bslib-value-box.bg-warning,
+.card.bg-warning {
+  background-color: #fbbf24 !important;
+  color: #1a1a1a !important;
+}
+
+.bslib-value-box.bg-info,
+.card.bg-info {
+  background-color: #22d3ee !important;
+  color: #fff !important;
+}
+
+.bslib-value-box.bg-secondary,
+.card.bg-secondary {
+  background-color: #8b5cf6 !important;
+  color: #fff !important;
+}
+

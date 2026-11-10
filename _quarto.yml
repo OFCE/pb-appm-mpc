@@ -1,0 +1,146 @@
+# Ces champs sont obligatoires et doivent être remplis
+title: "Matières premières critiques et souveraineté européenne: Vers l'ouverture de mines en Europe ?"
+# respecter le format pour la date
+date: "2026-10-10"
+# Version de revue du brouillon (v0, v1, ... via pb_version_up()). Supprimée
+# par setup_pb() à la publication : un PB publié n'est plus versionné.
+version: v0
+# Logo du PB (ofce, ife, ife-ofce, ife-cepii, ife-ofce-cepii).
+institut: ife
+# Série de numérotation du PB (voir pb/index.json dans ofce/wp-registry) ;
+# indépendante de `institut`.
+pb_series: ife
+# Écrite/synchronisée automatiquement par setup_pb() d'après le registre
+# central (ofce/wp-registry, sous-dossier pb/) ; lue par les extensions
+# ofce-quarto-extensions pour le bandeau "Version provisoire — non publiée".
+draft: true
+author:
+  - name: Aude Pommeret
+    email: aude.pommeret@sciencespo.fr
+    affiliation: IFE-OFCE
+    affiliation-url: http://www.ofce.fr
+  - name: Paul Malliet
+    email: paul.malliet@sciencespo.fr
+    affiliation: IFE-OFCE
+    affiliation-url: http://www.ofce.fr
+
+lang: fr
+# Institution porteuse du contenu, lue par pb_manifest() pour le champ
+# `institution` du manifeste (modèle de données v1).
+# Valeurs : ofce (défaut si absent), cepii, ife.
+# Pour le logo / co-branding des gabarits Typst (ife, ife-ofce, ife-cepii,
+# ife-ofce-cepii), utiliser le champ séparé `institut` (ofce-quarto-extensions).
+
+
+# Métadonnées éditoriales (modèle de données v1) : listes, vides si aucune.
+# categories : classification éditoriale libre ; keywords : mots-clés libres ;
+# jel : codes JEL en majuscules (ex. [E24, E25]).
+categories: []
+keywords: []
+jel: []
+
+date-modified: last-modified
+
+
+# Activer pour les commentaires
+comments:
+  hypothesis: true
+
+# Ce qui suit sera principalement imposé par setup_pb()
+project:
+  type: ofce-website
+
+execute:
+  freeze: auto
+
+website:
+  site-url: https://staging.ofce.fr/pb-appm-mpc/v0/
+  repo-url: https://github.com/OFCE/pb-appm-mpc/
+  page-navigation: true
+  bread-crumbs: true
+  favicon: www/fofce-wp.png
+  draft-mode: visible
+  other-links:
+    - text: Annexes
+      icon: file-bar-graph
+      href: annexes.html
+    - text: "Historique des changements"
+      icon: newspaper
+      href: news.html
+  navbar:
+    left:
+      - text: L'OFCE
+        menu:
+          - text: À propos
+            href: https://www.ofce.fr/ofce/ofce.html
+          - text: Rapport d'activité
+            href: https://www.ofce.fr/ofce/rapports.html
+          - text: Réseaux de recherche
+            href: https://www.ofce.fr/ofce/reseaux.html
+          - text: Nous rejoindre
+            href: https://www.ofce.fr/ofce/recrute.html
+          - text: Contact
+            href: https://www.ofce.fr/ofce/contact.html
+          - text: Mentions légales
+            href: https://www.ofce.fr/legal/mentions_legales.html
+          - text: Conditions générales
+            href: https://www.ofce.fr/legal/conditions_generales.html
+          - text: Politique des cookies
+            href: https://www.ofce.fr/legal/cookies.html
+      - text: Blog
+        href: https://www.ofce.fr/blog2024/
+      - text: Publications
+        menu:
+          - text: Policy Briefs
+            href: https://www.ofce.fr/publications/policy.html
+          - text: Documents de travail
+            href: https://www.ofce.fr/publications/working_papers.html
+          - text: Etudes & Rapports
+            href: https://www.ofce.fr/publications/rapports.html
+          - text: Revue de l'OFCE
+            href: https://www.ofce.fr/publications/revue.html
+      - text: Prévisions
+        menu:
+          - text: Prévision France & Monde
+            href: https://www.ofce.fr/prev/derniere/
+          - text: Nowcast
+            href: https://www.ofce.fr/nowcast/
+          - text: Anciennes prévisions
+            href: https://www.ofce.fr/indic_prev/prevision.html
+      - text: Outils & Ressources
+        menu:
+          - text: DEBTWATCH
+            href: https://ofce.shinyapps.io/debtwatchr/
+          - text: Modèle ThreeME
+            href: https://www.ofce.fr/recherche/threeme.html
+          - text: Modèle Evamodi
+            href: https://www.ofce.fr/recherche/evamodi.html
+    tools:
+      - icon: envelope
+        href: '#'
+      - icon: bluesky
+        href: https://bsky.app/profile/ofce.bsky.social
+      - icon: linkedin
+        href: https://www.linkedin.com/company/ofce/posts/
+      - icon: facebook
+        href: https://www.facebook.com/ofcesciencespo/
+    logo: /www/ifeofce.png
+    logo-href: https://www.ofce.fr/
+    logo-alt: logo de l'IFE|OFCE
+
+format:
+  pb-html: default
+
+ofce_pb: true
+
+stage-target: auto
+
+citation:
+  type: article-journal
+  # container-title est recalculé par setup_pb() d'après la série
+  # (pb/index.json).
+  container-title: Policy Brief de l'IFE
+  # issue et url sont calculés automatiquement par setup_pb() une fois `pb`
+  # attribué par le registre (ex. issue: "12", url:
+  # "https://www.ofce.fr/pb/ife/12/") — ne pas les renseigner manuellement.
+  # Chaque série est numérotée à partir de 1, indépendamment de l'année.
