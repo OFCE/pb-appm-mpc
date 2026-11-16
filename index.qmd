@@ -38,7 +38,7 @@ La liste des MPC a été actualisée dans le Critical Raw Materials (CRM) Act[^1
 
 [^2]: Voir [ici](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401252), Annexe I.
 
-La demande européenne en terres rares devrait être multipliée par six entre 2023 et 2030 et par sept entre 2023 et 2050. Celle en lithium devrait être multipliée par douze à l'horizon 2030 et par vingt et un en 2050[^3]. Il est aussi prévu que la demande mondiale augmente beaucoup (voir @fig-croissance-sds). Ces ordres de grandeur illustrent l'ampleur d'un choc de demande sans précédent.
+La demande européenne en terres rares devrait être multipliée par six entre 2023 et 2030 et par sept entre 2023 et 2050. Celle en lithium devrait être multipliée par douze à l'horizon 2030 et par vingt et un en 2050[^3]. Il est aussi prévu que la demande mondiale augmente beaucoup (voir @fig-demande-iea). Ces ordres de grandeur illustrent l'ampleur d'un choc de demande sans précédent.
 
 
 [^3]: Voir l'[étude prospective](https://publications.jrc.ec.europa.eu/repository/handle/JRC142643) du @JRC142643 associée au CRM Act.
@@ -53,35 +53,69 @@ Minéraux et métaux utiles pour les énergies renouvelables
 
 Au-delà de la demande tirée par la transition énergétique, il existe aussi une préoccupation de sécurité nationale concernant le rôle prospectif des MPC pour les industries du numérique et de la défense.
 
-::: {#fig-croissance-sds}
+::: {#fig-demande-iea}
 ```{r}
-#| fig-width: 5.5
-#| fig-height: 3
-#| out-width: "60%"
+#| fig-width: 9
+#| fig-height: 4.2
 library(ggplot2)
+library(dplyr)
+library(tidyr)
 
-croissance <- read.csv("data/fig2_croissance_minerais.csv")
+demande <- read.csv("data/fig2_demande_minerais_iea.csv") |>
+  mutate(facette = factor(paste0(minerai, " (", unite, ")"),
+                          levels = unique(paste0(minerai, " (", unite, ")"))),
+         annee = factor(annee),
+         energie = total * part_energie / 100)
 
-ggplot(croissance, aes(indice_2040, reorder(minerai, indice_2040),
-                       fill = minerai == "Lithium")) +
-  geom_col(width = 0.65) +
-  geom_text(aes(label = paste0("×", etiquette_source)), hjust = -0.2, size = 3.5,
-            fontface = "bold", colour = "grey20") +
-  scale_fill_manual(values = c(`TRUE` = "#B5401C", `FALSE` = "#E9B97A"), guide = "none") +
-  scale_x_continuous(limits = c(0, 47), expand = c(0, 0)) +
-  labs(x = "Demande en 2040, indice 2020 = 1", y = NULL) +
-  theme_minimal(base_size = 10) +
-  theme(panel.grid = element_blank(), axis.text.x = element_blank(),
-        axis.text.y = element_text(size = 10, colour = "grey15"),
-        plot.margin = margin(6, 10, 6, 6))
+barres <- demande |>
+  transmute(facette, annee,
+            `Technologies énergétiques` = energie,
+            `Autres usages` = total - energie) |>
+  pivot_longer(-c(facette, annee), names_to = "usage", values_to = "valeur") |>
+  mutate(usage = factor(usage, levels = c("Autres usages", "Technologies énergétiques")))
+
+points <- demande |>
+  select(facette, annee, cps, hds) |>
+  pivot_longer(c(cps, hds), names_to = "scenario", values_to = "valeur") |>
+  filter(!is.na(valeur)) |>
+  mutate(scenario = toupper(scenario))
+
+croissance <- demande |>
+  filter(!is.na(croissance)) |>
+  mutate(y = pmax(total, hds) * 1.07,
+         label = paste0("×", format(croissance, decimal.mark = ",")))
+
+ggplot(barres, aes(annee, valeur)) +
+  geom_col(aes(fill = usage), width = 0.7) +
+  geom_text(data = demande, aes(y = energie / 2, label = paste0(part_energie, " %")),
+            colour = "white", size = 2.6, fontface = "bold") +
+  geom_point(data = points, aes(shape = scenario), size = 2,
+             fill = "white", colour = "grey15", stroke = 0.6) +
+  geom_text(data = croissance, aes(y = y, label = label), vjust = 0,
+            size = 3.2, fontface = "bold", colour = "grey20") +
+  facet_wrap(~facette, nrow = 1, scales = "free_y") +
+  scale_fill_manual(values = c(`Technologies énergétiques` = "#B5401C",
+                               `Autres usages` = "#E9B97A"), name = NULL,
+                    breaks = c("Technologies énergétiques", "Autres usages")) +
+  scale_shape_manual(values = c(CPS = 16, HDS = 21), name = NULL,
+                     labels = c(CPS = "Scénario CPS", HDS = "Scénario HDS")) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.12)),
+                     labels = function(x) format(x, decimal.mark = ",", trim = TRUE)) +
+  labs(x = NULL, y = NULL) +
+  theme_minimal(base_size = 9) +
+  theme(panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
+        strip.text = element_text(face = "bold", size = 8.5),
+        axis.text.x = element_text(colour = "grey15"),
+        legend.position = "bottom", legend.box = "horizontal",
+        plot.margin = margin(4, 6, 4, 4))
 ```
 
-*Source :* @AIE2022.
+*Source :* @AIE2026. *Note :* barres = scénario STEPS[^4], pourcentages = part des technologies énergétiques dans la demande ; points = scénarios CPS et HDS ; multiplicateurs = croissance de la demande entre 2024 et 2040 (STEPS). Cuivre raffiné ; terres rares pour aimants uniquement.
 
-Croissance de certains minerais dans le scénario SDS[^4], en 2040 par rapport à 2020
+Demande mondiale de minerais critiques, 2025-2040
 :::
 
-[^4]: Sustainable Development Scenario
+[^4]: STEPS : *Stated Policies Scenario* (politiques annoncées) ; CPS : *Current Policies Scenario* (politiques actuelles) ; HDS : *High Demand Scenario* (demande élevée).
 
 Malgré le rôle central des MPC dans la transition énergétique, les travaux scientifiques existants se sont principalement concentrés sur les contraintes physiques. La littérature dominante s'appuie sur l'analyse des flux de matières, principalement développée par des géologues projetant la demande en MPC induite par le déploiement à grande échelle des technologies bas carbone [par ex. @VidalGoffeArndt2013]. Bien que ces contributions soient essentielles, elles font abstraction des mécanismes économiques --- prix, pouvoir de marché, innovation, comportements stratégiques --- qui sont pourtant susceptibles de façonner de manière déterminante les résultats effectifs. La littérature économique théorique a quant à elle longtemps ignoré les MPC. Les modèles standard traitent l'énergie renouvelable comme une technologie de substitution disponible à coût constant, sans tenir compte du fait que le déploiement du capital vert requiert des intrants minéraux épuisables.
 
