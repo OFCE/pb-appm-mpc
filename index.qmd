@@ -17,6 +17,12 @@ bibliography: references.bib
 #| include: false
 library(knitr)
 library(tidyverse)
+library(gt)
+library(sf)
+library(ofce)
+library(ggtext)
+source("R/cite_bib.R")
+
 opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
@@ -30,7 +36,7 @@ Produire de l'électricité sans émettre de CO₂ se heurte à trois obstacles 
 
 Le fait de prendre en compte les MPC dans la transition énergétique introduit une contrainte supplémentaire d'épuisement, venant s'ajouter à celle du budget carbone. D'une certaine manière, la question de la rareté s'est déplacée au fil du temps dans la littérature en économie de l'environnement. Cette problématique est apparue pour la première fois dans les années 1970 avec les combustibles fossiles épuisables, qui limitaient la croissance. Elle a ensuite été suivie, dans les années 2000 et 2010, par la question du changement climatique, modélisée sous la forme d'un budget carbone --- donc d'une épuisabilité de ce budget --- qui impose une contrainte plus forte à l'économie que l'épuisement des combustibles fossiles, dans la mesure où brûler l'ensemble des combustibles fossiles disponibles rendrait impossible le respect du budget carbone [voir @McGladeEkins2015]. La contrainte liée aux combustibles fossiles est ainsi devenue, dans une certaine mesure, obsolète, et celle portant sur les émissions de carbone pourrait ne pas empêcher la croissance grâce au développement des énergies renouvelables. Cependant, depuis le début des années 2020, nous sommes désormais confrontés à un nouveau problème de ressources épuisables, lié aux MPC, qui limite le développement des infrastructures liées aux énergies renouvelables et, par conséquent, la croissance. Finalement, avec les renouvelables, la transition énergétique déplace simplement la rareté liée à l'existence d'un budget carbone vers la rareté minérale.
 
-La liste des MPC a été actualisée dans le[ Critical Raw Materials (CRM) Act](https://single-market-economy.ec.europa.eu/sectors/raw-materials/areas-specific-interest/critical-raw-materials/critical-raw-materials-act_en)[^1] de l'UE en 2024 et dans cette liste, les matières premières stratégiques[^2], c'est-à-dire celles qui sont essentielles aux technologies stratégiques utilisées dans les domaines des applications vertes, numériques, de la défense et de l'aérospatiale ont été précisées. Il s'agit notamment des intrants irremplaçables pour les batteries de véhicules électriques, les éoliennes, les panneaux solaires, les aimants permanents des moteurs et les semi-conducteurs (voir @fig-mineraux-enr).
+La liste des MPC a été actualisée dans le [ Critical Raw Materials (CRM) Act](https://single-market-economy.ec.europa.eu/sectors/raw-materials/areas-specific-interest/critical-raw-materials/critical-raw-materials-act_en)[^1] de l'UE en 2024 et dans cette liste, les matières premières stratégiques[^2], c'est-à-dire celles qui sont essentielles aux technologies stratégiques utilisées dans les domaines des applications vertes, numériques, de la défense et de l'aérospatiale ont été précisées. Il s'agit notamment des intrants irremplaçables pour les batteries de véhicules électriques, les éoliennes, les panneaux solaires, les aimants permanents des moteurs et les semi-conducteurs (voir @fig-mineraux-enr).
 
 [^1]: Voir la liste mise à jour dans le CRM Act de l'UE [ici](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401252), Annexe II.
 
@@ -51,13 +57,13 @@ Minéraux et métaux utiles pour les énergies renouvelables
 
 Au-delà de la demande tirée par la transition énergétique, il existe aussi une préoccupation de sécurité nationale concernant le rôle prospectif des MPC pour les industries du numérique et de la défense.
 
-::: {#fig-demande-iea}
+
 ```{r}
+#| label: fig-demande-iea
 #| fig-width: 9
 #| fig-height: 4.2
-library(ggplot2)
-library(dplyr)
-library(tidyr)
+#| fig-cap: "scénarios de demande mondiale de minerais critiques de l'AIE, 2025-2040" 
+
 
 demande <- read.csv("data/fig2_demande_minerais_iea.csv") |>
   mutate(facette = factor(paste0(minerai, " (", unite, ")"),
@@ -100,20 +106,18 @@ ggplot(barres, aes(annee, valeur)) +
   scale_y_continuous(expand = expansion(mult = c(0, 0.12)),
                      labels = function(x) format(x, decimal.mark = ",", trim = TRUE)) +
   labs(x = NULL, y = NULL) +
-  theme_minimal(base_size = 9) +
+  theme_ofce(base_size = 9) +
   theme(panel.grid.major.x = element_blank(), panel.grid.minor = element_blank(),
         strip.text = element_text(face = "bold", size = 8.5),
         axis.text.x = element_text(colour = "grey15"),
         legend.position = "bottom", legend.box = "horizontal",
-        plot.margin = margin(4, 6, 4, 4))
+        plot.margin = margin(4, 6, 4, 4)) + 
+  ofce_caption(source = "AIE (2026) Global Critical Minerals Outlook, p110", 
+               note =  "barres = scénario STEPS : *Stated Policies Scenario* (politiques annoncées) ; CPS : *Current Policies Scenario* (politiques actuelles) ; HDS : *High Demand Scenario* (demande élevée)", ofce = FALSE)
 ```
 
-*Source :* @AIE2026. *Note :* barres = scénario STEPS[^4], pourcentages = part des technologies énergétiques dans la demande ; points = scénarios CPS et HDS ; multiplicateurs = croissance de la demande entre 2024 et 2040 (STEPS). Cuivre raffiné ; terres rares pour aimants uniquement.
+<!-- *Source :* @AIE2026. *Note :* barres = scénario STEPS[^4], pourcentages = part des technologies énergétiques dans la demande ; points = scénarios CPS et HDS ; multiplicateurs = croissance de la demande entre 2024 et 2040 (STEPS). Cuivre raffiné ; terres rares pour aimants uniquement. -->
 
-Demande mondiale de minerais critiques, 2025-2040
-:::
-
-[^4]: STEPS : *Stated Policies Scenario* (politiques annoncées) ; CPS : *Current Policies Scenario* (politiques actuelles) ; HDS : *High Demand Scenario* (demande élevée).
 
 Malgré le rôle central des MPC dans la transition énergétique, les travaux scientifiques existants se sont principalement concentrés sur les contraintes physiques. La littérature dominante s'appuie sur l'analyse des flux de matières, principalement développée par des géologues projetant la demande en MPC induite par le déploiement à grande échelle des technologies bas carbone [par ex. @VidalGoffeArndt2013]. Bien que ces contributions soient essentielles, elles font abstraction des mécanismes économiques --- prix, pouvoir de marché, innovation, comportements stratégiques --- qui sont pourtant susceptibles de façonner de manière déterminante les résultats effectifs. La littérature économique théorique a quant à elle longtemps ignoré les MPC. Les modèles standard traitent l'énergie renouvelable comme une technologie de substitution disponible à coût constant, sans tenir compte du fait que le déploiement du capital vert requiert des intrants minéraux épuisables.
 
@@ -163,33 +167,38 @@ Cependant, le problème de MPC s'est récemment déplacé vers l'offre et vers l
 
 # Une forte dépendance aux importations
 
-L'Europe ne produit qu'une fraction marginale des MPC qu'elle consomme. Sa dépendance aux importations est à la fois massive et concentrée sur un petit nombre de pays tiers, dont plusieurs présentent un profil géopolitique préoccupant. La Chine assure 100 % de l'approvisionnement de l'UE en terres rares lourdes, 97 % en magnésium, 71 % en gallium, 65 % en bismuth et 40 % en graphite naturel. Le Chili fournit 79 % du lithium, la Guinée 63 % de la bauxite et la RD Congo 35 % du tantale. Pour certaines matières, faute de données commerciales fiables, seule la concentration de la production mondiale est connue : la RD Congo extrait 63 % du cobalt mondial et l'Afrique du Sud produit entre 36 % et 94 % des platinoïdes. Pour l'aluminium, la Chine reste le premier fournisseur mondial de produits raffinés (voir aussi @fig-fournisseurs-ue).
-
-<!-- RELECTURE : parts alignées sur l'étude CRM 2023 de la Commission, reprise par le Conseil de l'UE (figure D, même source que la @fig-fournisseurs-ue). -->
+L'Europe ne produit qu'une fraction marginale des MPC qu'elle consomme. Sa dépendance aux importations est à la fois massive et concentrée sur un petit nombre de pays tiers, dont plusieurs présentent un profil géopolitique préoccupant. La Chine assure quasi intégralement l'approvisionnement de l'UE en terres rares lourdes, 97 % en magnésium, 71 % en gallium, 65 % en bismuth et 40 % en graphite naturel. Le Chili fournit 79 % du lithium, la Guinée 63 % de la bauxite et la République Démocratique du Congo (RDC) 35 % du tantale. Pour certaines matières, faute de données commerciales fiables, seule la concentration de la production mondiale est connue : la RDC extrait 63 % du cobalt mondial et l'Afrique du Sud produit entre 36 % et 94 % des platinoïdes. Pour l'aluminium, la Chine reste le premier fournisseur mondial de produits raffinés (voir @fig-fournisseurs-ue).
 
 Cette concentration crée une vulnérabilité structurelle. Contrairement au pétrole, dont les chocs affectent l'ensemble de l'économie, les chocs sur les MPC n'impactent que certains secteurs et produits spécifiques --- mais des secteurs stratégiques pour la compétitivité et la défense européennes. De plus, les marchés des MPC sont caractérisés par de longs délais de mise en production, des investissements initiaux importants et de faibles élasticités d'offre à court terme : la réponse de l'offre mondiale à un choc de demande ou à une rupture géopolitique peut prendre des années.
 
 Les travaux empiriques le confirment : les marchés de minéraux sont particulièrement vulnérables à la fragmentation géoéconomique. @AlvarezEtAl2026 montrent, à partir d'un modèle d'équilibre partiel, que les économies européennes feraient face à des augmentations prononcées des prix des minerais raffinés en cas de fragmentation commerciale --- notamment le magnésium, le platine, le palladium et l'aluminium. Avec moins de partenaires commerciaux, les hausses de prix lors d'un choc d'offre équivalent sont mécaniquement plus violentes, et le changement de camp géopolitique d'un seul exportateur majeur peut provoquer une pénurie sévère.
 
-::: {#fig-fournisseurs-ue}
+
 ```{r}
-#| fig-width: 9
-#| fig-height: 5.2
-library(sf)
-library(ggplot2)
-library(dplyr)
-library(ggtext)
+#| fig-width: 6.5
+#| fig-height: 3.6
+#| label: fig-fournisseurs-ue
+#| fig-cap: "Fournisseurs principaux de l'UE en MPC"
 
 pct <- function(x) paste0(x, " %")
+pgm <- c("Iridium", "Palladium", "Platine", "Rhodium", "Ruthénium")
 fournisseurs <- read.csv("data/fig3_fournisseurs_ue_2023.csv") |>
+  # regroupements pour alléger les étiquettes
+  mutate(matiere = case_when(iso3 == "ZAF" & matiere %in% pgm ~ "Platinoïdes",
+                             matiere == "Terres rares lourdes" ~ "TR lourdes",
+                             matiere == "Terres rares légères" ~ "TR légères",
+                             TRUE ~ matiere)) |>
+  group_by(iso3, pays, matiere, etape, part_mondiale) |>
+  summarise(pmin = min(part), part = max(part), .groups = "drop") |>
+  mutate(valeur = if_else(pmin == part, pct(part), paste0(pmin, "-", pct(part))),
+         it = if_else(etape == "extraction", "<i>", ""),
+         item = paste0(it, matiere, if_else(part_mondiale, "*", ""),
+                       sub("<", "</", it), " ", valeur)) |>
   arrange(desc(part)) |>
   group_by(iso3, pays) |>
-  mutate(it = if_else(etape == "extraction", "<i>", ""),
-         item = paste0(it, matiere, if_else(part_mondiale, "*", ""),
-                       sub("<", "</", it), " ", pct(part)),
-         # deux matières par ligne pour la Chine, une par ligne sinon
-         n_mat = n(), rang = row_number(),
-         sep = if_else(n_mat > 4 & rang %% 2 == 1, ", ", "<br>")) |>
+  # deux matières par ligne pour la Chine, une par ligne sinon
+  mutate(n_mat = n(), rang = row_number(),
+         sep = case_when(n_mat > 4 & rang %% 2 != 0 ~ ", ", TRUE ~ "<br>")) |>
   summarise(part_max = max(part),
             texte = sub("(<br>|, )$", "", paste0(item, sep, collapse = "")),
             .groups = "drop")
@@ -197,67 +206,75 @@ monde <- st_read("data/fig3_fond_carte.gpkg", quiet = TRUE) |>
   left_join(fournisseurs, by = c("ISO3_CODE" = "iso3"))
 
 eqe <- "+proj=eqearth"
-# Ancre dans le pays (ax, ay), position de l'étiquette (lon, lat), alignement
-etiquettes <- tribble(
-  ~iso3,  ~ax,  ~ay, ~lon, ~lat,  ~hj,
-  "NOR",    9,   61,  -12,   77,    1,
-  "BEL",  4.5, 50.6,  -14,   64,    1,
-  "FRA",    2,   47,  -14,   55,    1,
-  "ESP",   -4,   40,  -16,   46,    1,
-  "MAR",   -7,   32,  -18,   37,    1,
-  "GIN",  -11,   10,  -20,   14,    1,
-  "FIN",   26,   63,   32,   80,    0,
-  "POL",   19,   52,   30,   57,    0,
-  "RUS",   95,   63,   92,   78,    0,
-  "TUR",   33,   39,   38,   33,  0.5,
-  "QAT", 51.2, 25.3,   55,   22,    0,
-  "KAZ",   68,   48,   80,   55,    0,
-  "CHN",  104,   35,   92,   12,    0,
-  "USA",  -98,   39, -120,   58,  0.5,
-  "MEX", -102,   23, -110,   20,    1,
-  "BRA",  -50,  -10,  -33,   -6,    0,
-  "CHL",  -70,  -25,  -78,  -20,    1,
-  "COD",   23,   -3,   36,    2,    0,
-  "ZAF",   25,  -29,   36,  -28,    0,
-  "AUS",  147,  -23,  150,  -40,  0.5) |>
-  left_join(fournisseurs, by = "iso3") |>
-  mutate(label = paste0("<b>", pays, "</b><br>", texte))
 proj <- function(lon, lat) {
   st_coordinates(st_transform(st_as_sf(data.frame(lon, lat), coords = 1:2, crs = 4326), eqe))
 }
-etiquettes <- etiquettes |>
-  mutate(X = proj(lon, lat)[, 1], Y = proj(lon, lat)[, 2],
+# Ancre dans le pays (ax, ay), position de l'étiquette (lon, lat), alignement
+etiquettes <- tribble(
+  ~iso3,  ~ax,  ~ay, ~lon, ~lat,  ~hj, ~vj,
+  "NOR",    9,   61,  -14,   69,    1, 0.5,
+  "BEL",  4.5, 50.6,  -18,   60,    1, 0.5,
+  "FRA",    2,   47,  -20,   51,    1, 0.5,
+  "ESP",   -4,   40,  -22,   42,    1, 0.5,
+  "MAR",   -7,   32,  -24,   31,    1, 0.5,
+  "GIN",  -11,   10,  -20,   10,    1, 0.5,
+  "FIN",   26,   63,   38,   69,    0, 0.5,
+  "POL",   19,   52,   33,   55,    0, 0.5,
+  "RUS",   95,   63,  105,   68,    0, 0.5,
+  "TUR",   33,   39,   18,   32,  0.5,   1,
+  "QAT", 51.2, 25.3,   60,   18,    0,   1,
+  "KAZ",   68,   48,   54,   40,  0.5,   1,
+  "CHN",  104,   35,  125,   12,  0.5,   1,
+  "USA",  -98,   39, -112,   52,  0.5,   0,
+  "MEX", -102,   23,  -86,   17,    0, 0.5,
+  "BRA",  -50,  -10,  -30,  -12,    0, 0.5,
+  "CHL",  -70,  -25,  -78,  -28,    1, 0.5,
+  "COD",   23,   -3,   44,   -4,    0, 0.5,
+  "ZAF",   25,  -29,   40,  -30,    0, 0.5,
+  "AUS",  147,  -23,  150,  -38,  0.5,   1) |>
+  left_join(fournisseurs, by = "iso3") |>
+  mutate(label = paste0("<b>", pays, "</b><br>", texte),
+         X = proj(lon, lat)[, 1], Y = proj(lon, lat)[, 2],
          aX = proj(ax, ay)[, 1], aY = proj(ax, ay)[, 2])
+cadre <- cbind(proj(c(-122, 158), c(0, 0))[, 1], proj(c(0, 0), c(-46, 77))[, 2])
 
 ggplot() +
-  geom_sf(data = monde, aes(fill = part_max), colour = "white", linewidth = 0.15) +
+  geom_sf(data = monde, aes(fill = part_max), colour = "white", linewidth = 0.1) +
   geom_segment(data = etiquettes, aes(aX, aY, xend = X, yend = Y),
-               colour = "grey35", linewidth = 0.25) +
-  geom_point(data = etiquettes, aes(aX, aY), size = 0.5, colour = "grey20") +
-  geom_richtext(data = etiquettes, aes(X, Y, label = label, hjust = hj),
-                vjust = 1, size = 2.3, lineheight = 1.05,
-                fill = alpha("white", 0.85), label.colour = NA,
-                label.r = unit(1.5, "pt"),
-                label.padding = unit(c(1.5, 2.5, 1.5, 2.5), "pt")) +
-  scale_fill_steps(low = "#FBE3B9", high = "#B5401C", na.value = "grey85",
+               colour = "grey40", linewidth = 0.2) +
+  geom_point(data = etiquettes, aes(aX, aY), size = 0.3, colour = "grey20") +
+  geom_richtext(data = etiquettes, aes(X, Y, label = label, hjust = hj, vjust = vj),
+                size = 1.9, lineheight = 1, colour = "grey10",
+                fill = NA, label.colour = NA,
+                label.padding = unit(c(0.5, 1, 0.5, 1), "pt")) +
+  scale_fill_steps(low = "#FBE3B9", high = "#B5401C", na.value = "grey88",
                    breaks = c(40, 60, 80), limits = c(20, 100), labels = pct,
-                   name = "Part la plus élevée indiquée pour le pays",
-                   guide = guide_coloursteps(barwidth = unit(6, "cm"),
-                                             barheight = unit(0.25, "cm"),
-                                             title.position = "top")) +
-  coord_sf(crs = eqe, expand = FALSE) +
-  theme_void(base_size = 9) +
-  theme(legend.position = "bottom", plot.margin = margin(4, 4, 4, 4))
+                   name = "Part la plus élevée\nindiquée pour le pays",
+                   guide = guide_coloursteps(barwidth = unit(0.2, "cm"),
+                                             barheight = unit(2, "cm"))) +
+  coord_sf(crs = eqe, expand = FALSE, xlim = cadre[, 1], ylim = cadre[, 2],
+           datum = NA) +
+  theme_ofce(base_size = 9) +
+  theme(axis.text = element_blank(), axis.title = element_blank(),
+        axis.ticks = element_blank(), panel.grid = element_blank(),
+        axis.line = element_blank(),
+        legend.position = c(0.01, 0.04),
+        legend.justification = c(0, 0), legend.direction = "vertical",
+        legend.title = element_text(size = 6.5), legend.text = element_text(size = 6),
+        plot.margin = margin(2, 2, 2, 2)) +
+  labs(x = NULL, 
+       y = NULL)
+  ofce_caption( source = "Commission européenne, étude sur les matières premières critiques pour l'UE 2023 – rapport final (figure D) ; Conseil de l'UE, [« Critical raw materials explained »](https://www.consilium.europa.eu/fr/infographics/critical-raw-materials-explained/)",
+                note = "part du premier fournisseur dans l'approvisionnement de l'UE ; * part de la production mondiale (données commerciales de l'UE non fiables). En italique, stade de l'extraction ; en romain, stade de la transformation. TR : terres rares ; platinoïdes : iridium, palladium, platine, rhodium, ruthénium.", ofce = FALSE
+)
 ```
 
-*Source :* Commission européenne, étude sur les matières premières critiques pour l'UE 2023 – rapport final (figure D) ; Conseil de l'UE, [« Critical raw materials explained »](https://www.consilium.europa.eu/fr/infographics/critical-raw-materials-explained/). *Note :* part du premier fournisseur dans l'approvisionnement de l'UE ; * part de la production mondiale (données commerciales de l'UE non fiables). En italique, stade de l'extraction ; en romain, stade de la transformation.
 
-Fournisseurs principaux de l'UE en MPC
-:::
+
 
 ## La réponse politique européenne : du leadership industriel à l'autonomie stratégique
 
-La prise de conscience européenne s'est construite progressivement. L'Initiative sur les matières premières lancée en 2008 visait à maintenir le leadership industriel dans la transition énergétique. La première liste officielle de MPC, publiée en 2011, répondait à une logique de compétitivité économique. Le vrai tournant a eu lieu avec la séquence de chocs des années 2020 : la pandémie de Covid-19 a révélé la fragilité des chaînes d'approvisionnement mondiales, la guerre en Ukraine a souligné le risque d'arme commerciale, et les restrictions chinoises à l'exportation de gallium et germanium en 2023 ont matérialisé la menace.
+La prise de conscience européenne s'est construite progressivement. L'Initiative sur les matières premières lancée en 2008 visait à maintenir le leadership industriel dans la transition énergétique. La première liste officielle de MPC, publiée en 2011, répondait à une logique de compétitivité économique. Le vrai tournant a eu lieu avec la séquence de chocs des années 2020 : la pandémie de Covid-19 a révélé la fragilité des chaînes d'approvisionnement mondiales, la guerre en Ukraine a souligné le risque d'arme commerciale, et les restrictions chinoises à l'exportation de gallium et germanium en 2023, et plus récemment en 2025 sur les terres rares et les aimants ont matérialisé la menace.
 
 
 L'objectif s'est alors radicalement recentré sur la notion *d'autonomie stratégique*. Comme le formule le rapport Draghi [-@Draghi2024], dans les secteurs stratégiques, « les entreprises européennes doivent conserver les savoir-faire et capacités de production pour pouvoir réagir rapidement en cas de tensions géopolitiques. »
@@ -271,13 +288,14 @@ En réponse, l'UE a adopté le Critical Raw Materials Act (CRM Act) en 2024, qui
 
 En mars 2025, la Commission européenne a sélectionné 47 projets prioritaires couvrant l'extraction, le raffinage et le recyclage, répartis dans toute l'Europe --- dont deux sites d'extraction de lithium en France (Allier et Alsace) et des mines de cobalt en Espagne, de cuivre en Roumanie, de gallium en Grèce, de graphite en Suède et de lithium en Finlande. La @fig-projets-mines présente les projets de mines en cours en Europe.
 
-::: {#fig-projets-mines}
+
 ```{r}
 #| fig-width: 8
 #| fig-height: 6
 #| out-width: "80%"
-library(sf)
-library(ggplot2)
+#| fig-cap: "Projets de mines en cours en Europe (définition large)"
+#| label: fig-projets-mines
+
 
 fond <- st_read("data/fig4_fond_carte.gpkg", quiet = TRUE)
 projets <- read.csv("data/fig4_projets_mines.csv") |>
@@ -290,17 +308,20 @@ ggplot() +
            xlim = c(-78, 52), ylim = c(29.5, 78), expand = FALSE) +
   scale_x_continuous(breaks = seq(-75, 45, by = 15)) +
   scale_y_continuous(breaks = seq(30, 70, by = 10)) +
-  theme_minimal(base_size = 9) +
+  theme_ofce()+
   theme(panel.background = element_rect(fill = "#D3D8DA", colour = NA),
         panel.grid = element_line(colour = "grey60", linewidth = 0.2),
         panel.ontop = FALSE,
-        axis.title = element_blank())
+        axis.title = element_blank()) + 
+  ofce_caption(
+    source = "Bastianin et al. (2025), données issues de Owen, Lèbre and Kemp (2022)",
+    # source = cite_bib("@BastianinDelBoShamsudin2025, données issues de @Owen2022FastTrack"),
+    ofce = FALSE)
 ```
 
-*Source :* @BastianinDelBoShamsudin2025, based on data from Owen, J.R., Lèbre, É. and Kemp, D. (2022).
 
-Projets de mines en cours en Europe (définition large)
-:::
+
+
 
 ## Valoriser la souveraineté : le coût du CRM Act
 
@@ -310,11 +331,9 @@ L'approche repose sur un raisonnement coût-efficacité : si l'UE s'impose une c
 
 Le modèle est calibré sur le manganèse (minerai de l'aluminium) dans l'UE. Les simulations montrent que le coût courant de la contrainte --- la différence entre le coût de la solution avec raffinage domestique et celui du tout-importé --- augmente de façon convexe jusqu'en 2030, date d'entrée en vigueur de la contrainte de raffinage (40 %), où il atteint un pic de l'ordre de 30 millions d'euros avant de se stabiliser autour de 15 millions d'euros par an. Le niveau de consommation de manganèse en Europe à l'équilibre contraint est inférieur d'environ 3 % à celui qui prévaudrait sans contrainte.
 
-<!-- RELECTURE : (a) « manganèse (minerai de l'aluminium) » : le minerai de l'aluminium est la bauxite ; le manganèse sert surtout à l'acier et aux batteries. Quelle matière est effectivement calibrée ? (la note sur Chvaletice indique le manganèse). (b) Coût de la contrainte : un pic « de l'ordre de 30 millions » suivi d'une stabilisation « autour de 160 à 13 millions d'euros par an » n'est pas cohérent (niveau stabilisé supérieur au pic, fourchette inversée). Valeurs à vérifier dans LeclercqOllivierPommeret2026. L'ancienne conclusion mentionnait 400 M€/an « pour l'aluminium » : à réconcilier. -->
 
 Ce chiffre est à interpréter soigneusement : il ne mesure pas ce que la souveraineté « vaut » aux décideurs européens, mais ce qu'ils acceptent de payer pour l'obtenir. C'est une mesure plancher --- si la souveraineté ne valait pas au moins ce montant, la politique serait sans fondement. Ce cadre analytique est applicable à l'ensemble des matières premières couvertes par le CRM Act[^8] et constitue un outil précieux pour évaluer la cohérence des politiques publiques.
 
-<!-- RELECTURE : Les chiffres de cette section (30 M€, etc.) et ceux des sections sur le recyclage des actifs fossiles (89 %) et sur les permis (32 trimestres, VAN proche de zéro) proviennent de documents de travail non publiés : préciser qu'il s'agit d'ordres de grandeur issus de simulations calibrées ? -->
 
 [^souverainete]: Historiquement associé aux relations entre États [@philpottSovereigntyIntroductionBrief1995], le terme de souveraineté a été récemment utilisé comme synonyme d’« autonomie » ou d’« indépendance », en lien avec des domaines plus spécifiques tels que l’alimentation, l’énergie ou les ressources minérales. 
 
@@ -322,13 +341,13 @@ Ce chiffre est à interpréter soigneusement : il ne mesure pas ce que la souver
 
 ::: {.callout-note title="La réponse française : entre raffinage et mise à jour de l'inventaire des ressources"}
 
-La réponse française : entre raffinage et mise à jour de l'inventaire des ressources
 
-La France a lancé en février 2025 une actualisation de son inventaire des ressources minérales, l'objectif étant de mieux connaître le potentiel du sous-sol national. Cet inventaire couvre désormais une soixantaine d'éléments, contre une vingtaine auparavant, dont certains --- comme le lithium, le gallium ou le germanium --- étaient absents ou mal détectés lors des premières campagnes.
 
-Le programme, piloté par le BRGM sur une période de cinq ans, se concentre prioritairement sur cinq régions à fort potentiel géologique : l'ouest du Massif central, la zone Morvan-Brévenne, les Vosges, l'Occitanie-Cévennes et le sillon nord de la Guyane. En métropole, les secteurs sélectionnés regroupent soit des ressources déjà identifiées mais encore insuffisamment délimitées --- notamment quant à leurs extensions potentielles --- soit des zones présentant un potentiel reconnu pour la découverte de métaux critiques et stratégiques. En Guyane, la partie septentrionale du territoire se distingue par une grande diversité de minéralisations, comprenant notamment l'or, le cuivre, le plomb, le zinc, le lithium, le niobium et le tantale.
+La France a lancé en février 2025 une actualisation de son inventaire des ressources minérales, l'objectif étant de mieux connaître le potentiel du sous-sol national. Cet inventaire couvre désormais une soixantaine d'éléments, contre une vingtaine auparavant, dont certains --- comme le lithium, le gallium ou le germanium --- étaient absents ou mal détectés lors des premières campagnes. Le programme, piloté par le BRGM sur une période de cinq ans, se concentre prioritairement sur cinq régions à fort potentiel géologique : l'ouest du Massif central, la zone Morvan-Brévenne, les Vosges, l'Occitanie-Cévennes et le sillon nord de la Guyane. En métropole, les secteurs sélectionnés regroupent soit des ressources déjà identifiées mais encore insuffisamment délimitées --- notamment quant à leurs extensions potentielles --- soit des zones présentant un potentiel reconnu pour la découverte de métaux critiques et stratégiques. En Guyane, la partie septentrionale du territoire se distingue par une grande diversité de minéralisations, comprenant notamment l'or, le cuivre, le plomb, le zinc, le lithium, le niobium et le tantale.
 
-Par ailleurs, une note de la Direction Générale du Trésor fait état d'un projet de *« club de confiance »* entre pays qui veulent sécuriser leurs approvisionnements en métaux critiques, l'objectif n'étant pas tant de sécuriser l'approvisionnement en matières premières que d'augmenter leur capacité de les raffiner et de les transformer.
+Par ailleurs, une note de la Direction Générale du Trésor fait état d'une diplomatie dédiée, menée par le ministère de l'Europe et des Affaires étrangères, en lien avec la DIAMMS et la DG Trésor, pour promouvoir des alliances internationales avec des pays disposant de ressources ou souhaitant développer des activités en aval de la chaîne de valeur."
+
+Créé fin 2022, l’Observatoire français des ressources minérales pour les filières industrielles (OFREMI) assure une veille des marchés, actualise les fiches de criticité et réalise des études sur l’offre, la demande et la résilience des chaînes de valeur. Par ailleurs, France 2030 consacre 500 M€ à un appel à projets sur les métaux prioritaires, tandis qu’un fonds d’investissement dédié, auquel la Caisse des Dépôts contribue à hauteur de 500 M€, vise une taille de 2 Md€. Enfin, un crédit d’impôt C3IV soutient les investissements dans l’extraction, la transformation et la valorisation des matières premières critiques, tandis que la garantie des projets stratégiques (GPS) facilite le financement de projets en France et à l’étranger [@AubertZoghelyLeGuennec2024].
 :::
 
 
@@ -421,7 +440,6 @@ L'analyse de @LeclercqOllivierPommeret2026 préconise spécifiquement ce mécani
 
 Le modèle DSGE de @AurayDiPacePommeret2026 identifie les délais d'autorisation comme l'un des obstacles les plus importants à l'investissement minier en Europe. Avec un délai attendu de 32 trimestres (8 ans) pour obtenir un permis d'exploitation, la valeur actuelle nette d'un projet médian est proche de zéro dans le régime de référence. Réduire ces délais de 8--10 ans à 4--5 ans constitue l'un des leviers les plus puissants pour élever la rentabilité sociale des projets miniers médians, sans nécessiter de subvention directe.
 
-<!-- RELECTURE : Chiffres (32 trimestres, VAN proche de zéro) issus d'un document de travail non publié : préciser qu'il s'agit d'ordres de grandeur de simulation ? -->
 
 Ce résultat est cohérent avec la priorité accordée par la Commission européenne à la simplification des procédures d'autorisation dans le cadre du CRM Act. Les 47 projets prioritaires sélectionnés en mars 2025 bénéficient précisément d'un statut d'intérêt public permettant d'accélérer les procédures administratives. Mais les travaux académiques suggèrent que cette accélération doit s'accompagner du maintien de standards environnementaux stricts, au risque sinon d'accentuer la distorsion d'extraction et de sous-internaliser les coûts environnementaux.
 
@@ -435,7 +453,7 @@ Les travaux économiques récents éclairent trois arbitrages au cœur de cette 
 
 **Ouvrir des mines maintenant ou attendre.** L'incertitude incite habituellement à reporter un investissement irréversible. Mais lorsque le risque principal est un choc géopolitique qui ne peut que faire monter les prix, il peut au contraire justifier d'investir plus tôt. Pour les matières les plus exposées et encore peu recyclées, développer une production et un raffinage domestiques relève de l'assurance plus que du pari.
 
-**Extraire ou recycler.** Le recyclage améliore le bien-être collectif et réduit la pression sur les ressources primaires, mais il ne peut pas remplacer l'extraction tant que le stock de matériaux en circulation reste faible. À court et moyen terme, les deux sont complémentaires. Le soutien public au recyclage devrait être d'autant plus fort que le marché de la matière concernée est concentré.
+**Extraire ou recycler.** Le recyclage améliore le bien-être collectif et réduit la pression sur les ressources primaires, mais il ne peut pas remplacer l'extraction tant que le stock de matériaux en circulation reste faible. À court et moyen terme, les deux sont complémentaires. 
 
 **Produire chez soi ou diversifier.** La souveraineté a un coût, mesurable comme le surcoût accepté de la production domestique par rapport aux importations. Le rendre explicite permet de le comparer à celui d'une diversification par des partenariats avec des pays tiers fiables, et de choisir matière par matière plutôt que de fixer des cibles uniformes.
 
