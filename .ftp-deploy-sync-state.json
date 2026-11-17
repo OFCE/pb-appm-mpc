@@ -1,45 +1,45 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1794932461608,
+    "generatedTime": 1794944210106,
     "data": [
         {
             "type": "file",
             "name": ".ftp-deploy-sync-state.json",
-            "size": 10803,
-            "hash": "117f34ceada4d1c1371eb43ffd7ba3929c577878677cbee5564292f620b37456"
-        },
-        {
-            "type": "file",
-            "name": ".staticrypt.json",
-            "size": 50,
-            "hash": "de2352e262b6c3847d48c8431399bbb98c6f0e3e41c662a059afde6916d0dbc7"
+            "size": 10805,
+            "hash": "012198f4772548e3b4f9db14d97af4b9c4a7b8b0a249d6f3a4ff7677df3447e6"
         },
         {
             "type": "file",
             "name": "annexes.html",
             "size": 105709,
-            "hash": "275616e2c5ffea2c34fd3ca996da75d12902c23590d95e88f552a548bb507a2b"
+            "hash": "a4f60fccc47eec4c842517571d2dc99722c79b755d8697d5cab003cfed47a6e9"
+        },
+        {
+            "type": "file",
+            "name": ".staticrypt.json",
+            "size": 50,
+            "hash": "bf625446f970d6b9c1dac8b6cb6a5a2d7b28719dc52190d59aac46870f26bfb0"
         },
         {
             "type": "file",
             "name": "ife-draft-pb-appm-mpc-v0.pdf",
-            "size": 1001596,
-            "hash": "4e6e36fc5911a381e0616b705eda4ee38b5402df9303532164db2c998636ccbe"
+            "size": 1005123,
+            "hash": "04dd7268525d7f81af84c624813e8a9fa41b347367946d60c4198dad4e34a57f"
         },
         {
             "type": "folder",
             "name": "images"
         },
         {
-            "type": "folder",
-            "name": "index_files"
-        },
-        {
             "type": "file",
             "name": "index.html",
-            "size": 329517,
-            "hash": "87a2baeab7ae87f16d519adaaca1f444219b20c4dfc7e7ecff8ffe7d02972c7c"
+            "size": 334381,
+            "hash": "2702d4ada80941f914607c8611e750dec85b28678c0cc1a6945a46240b786712"
+        },
+        {
+            "type": "folder",
+            "name": "index_files"
         },
         {
             "type": "file",
@@ -51,19 +51,13 @@
             "type": "file",
             "name": "news.html",
             "size": 105901,
-            "hash": "90503060f1f8cb6c5b27d47ff9aebda226201a153dce4a401d09179eae47ec10"
+            "hash": "0615ff96e8c77e93c33ef151b30585f7b6e577c51c197ac833e3d712c6f906fa"
         },
         {
             "type": "file",
             "name": "push-count.json",
             "size": 73,
-            "hash": "943c1fdcebf3c3d5c45a3af6a5f34d1a0ef38a07ce280820e5af00f9ef4af02c"
-        },
-        {
-            "type": "file",
-            "name": "search.json",
-            "size": 44329,
-            "hash": "ec1d358ccb975cc152b7ab0629b0c79cd0ffa7eda5fce50b62c0e006c58c39ab"
+            "hash": "a0c7601d25ba041585417969ff01751334a1869b844dfd5912557aecd608a5f7"
         },
         {
             "type": "folder",
@@ -73,7 +67,13 @@
             "type": "file",
             "name": "sitemap.xml",
             "size": 477,
-            "hash": "2d0aaa31f4da92f36cfedd22e55a289cf860ff67be2bd4ca9746a10bffec966a"
+            "hash": "6b68539ae2898f962f3a28763d209fe5d31f67cfc590dec4b0fa3d8de2c7d70b"
+        },
+        {
+            "type": "file",
+            "name": "search.json",
+            "size": 41807,
+            "hash": "d6514eacf688cbbb4a4a1a9bebfca0cc0b767cd7db9d38ec697ca756c606bd6a"
         },
         {
             "type": "folder",
@@ -95,15 +95,15 @@
         },
         {
             "type": "folder",
-            "name": "site_libs/clipboard"
-        },
-        {
-            "type": "folder",
             "name": "site_libs/cookie-consent"
         },
         {
             "type": "folder",
             "name": "site_libs/quarto-contrib"
+        },
+        {
+            "type": "folder",
+            "name": "site_libs/clipboard"
         },
         {
             "type": "folder",
@@ -126,8 +126,8 @@
         {
             "type": "file",
             "name": "index_files/figure-html/fig-demande-iea-1.svg",
-            "size": 234909,
-            "hash": "1cf295ae45064a8fad339a34c2a5f8a0f77beb89d8522d5046b972fe4a7c13a8"
+            "size": 234942,
+            "hash": "9b4fe4b68856e35d5bfea2e08f1717206e06220d1646c2f5a723ca61eb38faf7"
         },
         {
             "type": "file",
@@ -191,12 +191,6 @@
         },
         {
             "type": "file",
-            "name": "site_libs/clipboard/clipboard.min.js",
-            "size": 9160,
-            "hash": "e17a1d816e13c0826e0ed7febfabc3277f45571234bde0bf9120829a7169edc9"
-        },
-        {
-            "type": "file",
             "name": "site_libs/cookie-consent/cookie-consent.css",
             "size": 75,
             "hash": "9be199c11f99e906de71b99a9d4e7e113b979007c90125d7c49a593bc7f22e28"
@@ -206,6 +200,16 @@
             "name": "site_libs/cookie-consent/cookie-consent.js",
             "size": 206910,
             "hash": "8705f2ec4440409a916b9e3a76e038446f806d1d3a5c15be1815691280cd3a38"
+        },
+        {
+            "type": "folder",
+            "name": "site_libs/quarto-contrib/glightbox"
+        },
+        {
+            "type": "file",
+            "name": "site_libs/clipboard/clipboard.min.js",
+            "size": 9160,
+            "hash": "e17a1d816e13c0826e0ed7febfabc3277f45571234bde0bf9120829a7169edc9"
         },
         {
             "type": "file",
@@ -218,10 +222,6 @@
             "name": "site_libs/quarto-html/popper.min.js",
             "size": 20084,
             "hash": "4d50586b184724d39ddfe0f6582861664eddd5e806e5a79e0dbaa832361414d0"
-        },
-        {
-            "type": "folder",
-            "name": "site_libs/quarto-contrib/glightbox"
         },
         {
             "type": "file",
@@ -242,14 +242,14 @@
             "hash": "5969f497d9158d7682f8219c6f13fa67269cdf5bf50a3931d95327151dee5678"
         },
         {
-            "type": "folder",
-            "name": "site_libs/quarto-html/tabsets"
-        },
-        {
             "type": "file",
             "name": "site_libs/quarto-html/tippy.umd.min.js",
             "size": 24033,
             "hash": "41181eeec6d7ba64cb9165f0e95563e34e026bde79e7c13aeec83270429b6fae"
+        },
+        {
+            "type": "folder",
+            "name": "site_libs/quarto-html/tabsets"
         },
         {
             "type": "file",
