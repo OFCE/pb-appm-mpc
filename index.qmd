@@ -16,9 +16,7 @@ bibliography: references.bib
 ```{r}
 #| include: false
 library(knitr)
-library(readr)
-library(gt)
-
+library(tidyverse)
 opts_chunk$set(
   echo = FALSE,
   warning = FALSE,
@@ -32,7 +30,7 @@ Produire de l'électricité sans émettre de CO₂ se heurte à trois obstacles 
 
 Le fait de prendre en compte les MPC dans la transition énergétique introduit une contrainte supplémentaire d'épuisement, venant s'ajouter à celle du budget carbone. D'une certaine manière, la question de la rareté s'est déplacée au fil du temps dans la littérature en économie de l'environnement. Cette problématique est apparue pour la première fois dans les années 1970 avec les combustibles fossiles épuisables, qui limitaient la croissance. Elle a ensuite été suivie, dans les années 2000 et 2010, par la question du changement climatique, modélisée sous la forme d'un budget carbone --- donc d'une épuisabilité de ce budget --- qui impose une contrainte plus forte à l'économie que l'épuisement des combustibles fossiles, dans la mesure où brûler l'ensemble des combustibles fossiles disponibles rendrait impossible le respect du budget carbone [voir @McGladeEkins2015]. La contrainte liée aux combustibles fossiles est ainsi devenue, dans une certaine mesure, obsolète, et celle portant sur les émissions de carbone pourrait ne pas empêcher la croissance grâce au développement des énergies renouvelables. Cependant, depuis le début des années 2020, nous sommes désormais confrontés à un nouveau problème de ressources épuisables, lié aux MPC, qui limite le développement des infrastructures liées aux énergies renouvelables et, par conséquent, la croissance. Finalement, avec les renouvelables, la transition énergétique déplace simplement la rareté liée à l'existence d'un budget carbone vers la rareté minérale.
 
-La liste des MPC a été actualisée dans le Critical Raw Materials (CRM) Act[^1] de l'UE en 2024 et dans cette liste, les matières premières stratégiques[^2], c'est-à-dire celles qui sont essentielles aux technologies stratégiques utilisées dans les domaines des applications vertes, numériques, de la défense et de l'aérospatiale ont été précisées. Il s'agit notamment des intrants irremplaçables pour les batteries de véhicules électriques, les éoliennes, les panneaux solaires, les aimants permanents des moteurs et les semi-conducteurs (voir @fig-mineraux-enr).
+La liste des MPC a été actualisée dans le[ Critical Raw Materials (CRM) Act](https://single-market-economy.ec.europa.eu/sectors/raw-materials/areas-specific-interest/critical-raw-materials/critical-raw-materials-act_en)[^1] de l'UE en 2024 et dans cette liste, les matières premières stratégiques[^2], c'est-à-dire celles qui sont essentielles aux technologies stratégiques utilisées dans les domaines des applications vertes, numériques, de la défense et de l'aérospatiale ont été précisées. Il s'agit notamment des intrants irremplaçables pour les batteries de véhicules électriques, les éoliennes, les panneaux solaires, les aimants permanents des moteurs et les semi-conducteurs (voir @fig-mineraux-enr).
 
 [^1]: Voir la liste mise à jour dans le CRM Act de l'UE [ici](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202401252), Annexe II.
 
@@ -131,9 +129,9 @@ Cependant, le problème de MPC s'est récemment déplacé vers l'offre et vers l
 
 # Une forte dépendance aux importations
 
-L'Europe ne produit qu'une fraction marginale des MPC qu'elle consomme. Sa dépendance aux importations est à la fois massive et concentrée sur un petit nombre de pays tiers, dont plusieurs présentent un profil géopolitique préoccupant. La Chine fournit 99 % des terres rares lourdes, 47 % du graphite naturel, 93 % du magnésium, et 49 % du bismuth consommés dans l'UE. La RDC couvre 68 % des importations européennes de cobalt, le Chili 78 % du lithium, la Guinée 64 % de la bauxite. Pour l'aluminium, la Chine reste le premier fournisseur mondial de produits raffinés (voir aussi @fig-fournisseurs-ue).
+L'Europe ne produit qu'une fraction marginale des MPC qu'elle consomme. Sa dépendance aux importations est à la fois massive et concentrée sur un petit nombre de pays tiers, dont plusieurs présentent un profil géopolitique préoccupant. La Chine assure 100 % de l'approvisionnement de l'UE en terres rares lourdes, 97 % en magnésium, 71 % en gallium, 65 % en bismuth et 40 % en graphite naturel. Le Chili fournit 79 % du lithium, la Guinée 63 % de la bauxite et la RD Congo 35 % du tantale. Pour certaines matières, faute de données commerciales fiables, seule la concentration de la production mondiale est connue : la RD Congo extrait 63 % du cobalt mondial et l'Afrique du Sud produit entre 36 % et 94 % des platinoïdes. Pour l'aluminium, la Chine reste le premier fournisseur mondial de produits raffinés (voir aussi @fig-fournisseurs-ue).
 
-<!-- RELECTURE : Les parts citées ici (99 % terres rares lourdes, 47 % graphite, 93 % magnésium, etc.) proviennent-elles de la même source et de la même année que la carte (Commission 2020) ? Une étude de la Commission de 2023 existe ; le rapport spécial 04/2026 de la Cour des comptes européenne donne par ex. 97 % pour le magnésium. À vérifier et harmoniser. -->
+<!-- RELECTURE : parts alignées sur l'étude CRM 2023 de la Commission, reprise par le Conseil de l'UE (figure D, même source que la @fig-fournisseurs-ue). -->
 
 Cette concentration crée une vulnérabilité structurelle. Contrairement au pétrole, dont les chocs affectent l'ensemble de l'économie, les chocs sur les MPC n'impactent que certains secteurs et produits spécifiques --- mais des secteurs stratégiques pour la compétitivité et la défense européennes. De plus, les marchés des MPC sont caractérisés par de longs délais de mise en production, des investissements initiaux importants et de faibles élasticités d'offre à court terme : la réponse de l'offre mondiale à un choc de demande ou à une rupture géopolitique peut prendre des années.
 
@@ -148,42 +146,68 @@ library(ggplot2)
 library(dplyr)
 library(ggtext)
 
-pct <- function(x) paste0(x, " %")
-fournisseurs <- read.csv("data/fig3_fournisseurs_ue.csv") |>
+pct <- function(x) paste0(x, " %")
+fournisseurs <- read.csv("data/fig3_fournisseurs_ue_2023.csv") |>
+  arrange(desc(part)) |>
   group_by(iso3, pays) |>
+  mutate(it = if_else(etape == "extraction", "<i>", ""),
+         item = paste0(it, matiere, if_else(part_mondiale, "*", ""),
+                       sub("<", "</", it), " ", pct(part)),
+         # deux matières par ligne pour la Chine, une par ligne sinon
+         n_mat = n(), rang = row_number(),
+         sep = if_else(n_mat > 4 & rang %% 2 == 1, ", ", "<br>")) |>
   summarise(part_max = max(part),
-            texte = paste0(matiere, " ", pct(part), collapse = "<br>"),
+            texte = sub("(<br>|, )$", "", paste0(item, sep, collapse = "")),
             .groups = "drop")
 monde <- st_read("data/fig3_fond_carte.gpkg", quiet = TRUE) |>
   left_join(fournisseurs, by = c("ISO3_CODE" = "iso3"))
 
 eqe <- "+proj=eqearth"
-# Position des étiquettes (lon, lat) et alignement horizontal
+# Ancre dans le pays (ax, ay), position de l'étiquette (lon, lat), alignement
 etiquettes <- tribble(
-  ~iso3, ~lon, ~lat, ~hj,
-  "NOR",   -2,  70,    1,   "FIN",  33,  66, 0,   "FRA",  -7,  56, 1,
-  "DEU",   15,  53,    0,   "ESP", -12,  40, 1,   "MAR", -13,  31.5, 1,
-  "TUR",   32,  33,  0.5,   "KAZ",  70,  58, 0,   "CHN", 130,  48, 0,
-  "MEX", -106,  27,    1,   "GIN", -16,  14, 1,   "COD",  31,  -1, 0,
-  "IDN",  124,  10,    0,   "BRA", -37, -10, 0,   "CHL", -74, -22, 1,
-  "AUS",  134, -40,  0.5) |>
+  ~iso3,  ~ax,  ~ay, ~lon, ~lat,  ~hj,
+  "NOR",    9,   61,  -12,   77,    1,
+  "BEL",  4.5, 50.6,  -14,   64,    1,
+  "FRA",    2,   47,  -14,   55,    1,
+  "ESP",   -4,   40,  -16,   46,    1,
+  "MAR",   -7,   32,  -18,   37,    1,
+  "GIN",  -11,   10,  -20,   14,    1,
+  "FIN",   26,   63,   32,   80,    0,
+  "POL",   19,   52,   30,   57,    0,
+  "RUS",   95,   63,   92,   78,    0,
+  "TUR",   33,   39,   38,   33,  0.5,
+  "QAT", 51.2, 25.3,   55,   22,    0,
+  "KAZ",   68,   48,   80,   55,    0,
+  "CHN",  104,   35,   92,   12,    0,
+  "USA",  -98,   39, -120,   58,  0.5,
+  "MEX", -102,   23, -110,   20,    1,
+  "BRA",  -50,  -10,  -33,   -6,    0,
+  "CHL",  -70,  -25,  -78,  -20,    1,
+  "COD",   23,   -3,   36,    2,    0,
+  "ZAF",   25,  -29,   36,  -28,    0,
+  "AUS",  147,  -23,  150,  -40,  0.5) |>
   left_join(fournisseurs, by = "iso3") |>
-  mutate(label = paste0("<b>", pays, "</b><br>", texte)) |>
-  st_as_sf(coords = c("lon", "lat"), crs = 4326) |>
-  st_transform(eqe)
-etiquettes <- bind_cols(st_drop_geometry(etiquettes),
-                        as.data.frame(st_coordinates(etiquettes)))
+  mutate(label = paste0("<b>", pays, "</b><br>", texte))
+proj <- function(lon, lat) {
+  st_coordinates(st_transform(st_as_sf(data.frame(lon, lat), coords = 1:2, crs = 4326), eqe))
+}
+etiquettes <- etiquettes |>
+  mutate(X = proj(lon, lat)[, 1], Y = proj(lon, lat)[, 2],
+         aX = proj(ax, ay)[, 1], aY = proj(ax, ay)[, 2])
 
 ggplot() +
   geom_sf(data = monde, aes(fill = part_max), colour = "white", linewidth = 0.15) +
+  geom_segment(data = etiquettes, aes(aX, aY, xend = X, yend = Y),
+               colour = "grey35", linewidth = 0.25) +
+  geom_point(data = etiquettes, aes(aX, aY), size = 0.5, colour = "grey20") +
   geom_richtext(data = etiquettes, aes(X, Y, label = label, hjust = hj),
-                vjust = 1, size = 2.4, lineheight = 1.05,
-                fill = alpha("white", 0.75), label.colour = NA,
+                vjust = 1, size = 2.3, lineheight = 1.05,
+                fill = alpha("white", 0.85), label.colour = NA,
                 label.r = unit(1.5, "pt"),
                 label.padding = unit(c(1.5, 2.5, 1.5, 2.5), "pt")) +
   scale_fill_steps(low = "#FBE3B9", high = "#B5401C", na.value = "grey85",
                    breaks = c(40, 60, 80), limits = c(20, 100), labels = pct,
-                   name = "Part de l'approvisionnement de l'UE\n(matière la plus dépendante du pays)",
+                   name = "Part la plus élevée indiquée pour le pays",
                    guide = guide_coloursteps(barwidth = unit(6, "cm"),
                                              barheight = unit(0.25, "cm"),
                                              title.position = "top")) +
@@ -192,7 +216,7 @@ ggplot() +
   theme(legend.position = "bottom", plot.margin = margin(4, 4, 4, 4))
 ```
 
-*Source :* European Commission, Study on the EU's list of CRM (2020).
+*Source :* Commission européenne, étude sur les matières premières critiques pour l'UE 2023 – rapport final (figure D) ; Conseil de l'UE, [« Critical raw materials explained »](https://www.consilium.europa.eu/fr/infographics/critical-raw-materials-explained/). *Note :* part du premier fournisseur dans l'approvisionnement de l'UE ; * part de la production mondiale (données commerciales de l'UE non fiables). En italique, stade de l'extraction ; en romain, stade de la transformation.
 
 Fournisseurs principaux de l'UE en MPC
 :::
@@ -250,7 +274,7 @@ La notion de souveraineté[^souverainete] est omniprésente dans les discours po
 
 L'approche repose sur un raisonnement coût-efficacité : si l'UE s'impose une contrainte de production domestique alors que celle-ci est plus coûteuse que l'importation, c'est qu'elle estime implicitement que la souveraineté obtenue vaut au moins ce surcoût. Le coût de la contrainte devient ainsi une mesure plancher de la valeur de la souveraineté. C'est une approche descendante (top-down), analogue au prix tutélaire du carbone : plutôt que d'évaluer directement la valeur de l'autonomie stratégique (difficile à mesurer), on part de l'objectif politique et on en déduit le coût marginal.
 
-Le modèle est calibré sur le manganèse (minerai de l'aluminium) dans l'UE. Les simulations montrent que le coût courant de la contrainte --- la différence entre le coût de la solution avec raffinage domestique et celui du tout-importé --- augmente de façon convexe jusqu'en 2030, date d'entrée en vigueur de la contrainte de raffinage (40 %), où il atteint un pic de l'ordre de 30 millions d'euros avant de se stabiliser autour de 160 à 13 millions d'euros par an. Le niveau de consommation de manganèse en Europe à l'équilibre contraint est inférieur d'environ 3 % à celui qui prévaudrait sans contrainte.
+Le modèle est calibré sur le manganèse (minerai de l'aluminium) dans l'UE. Les simulations montrent que le coût courant de la contrainte --- la différence entre le coût de la solution avec raffinage domestique et celui du tout-importé --- augmente de façon convexe jusqu'en 2030, date d'entrée en vigueur de la contrainte de raffinage (40 %), où il atteint un pic de l'ordre de 30 millions d'euros avant de se stabiliser autour de 15 millions d'euros par an. Le niveau de consommation de manganèse en Europe à l'équilibre contraint est inférieur d'environ 3 % à celui qui prévaudrait sans contrainte.
 
 <!-- RELECTURE : (a) « manganèse (minerai de l'aluminium) » : le minerai de l'aluminium est la bauxite ; le manganèse sert surtout à l'acier et aux batteries. Quelle matière est effectivement calibrée ? (la note sur Chvaletice indique le manganèse). (b) Coût de la contrainte : un pic « de l'ordre de 30 millions » suivi d'une stabilisation « autour de 160 à 13 millions d'euros par an » n'est pas cohérent (niveau stabilisé supérieur au pic, fourchette inversée). Valeurs à vérifier dans LeclercqOllivierPommeret2026. L'ancienne conclusion mentionnait 400 M€/an « pour l'aluminium » : à réconcilier. -->
 
@@ -294,10 +318,7 @@ read_csv("data/table/analogie_options_reelles.csv", show_col_types = FALSE) |>
     reserve_petroliere = "Réserve pétrolière",
     mine_non_developpee = "Mine non développée"
   ) |>
-  tab_style(
-    style = cell_text(weight = "bold"),
-    locations = cells_body(columns = element)
-  )
+  ofce::table_ofce()
 ```
 
 Le modèle représente la décision d'un gouvernement --- et non d'une entreprise privée --- cherchant à maximiser l'intérêt général. Cette perspective est essentielle : elle introduit une prime de souveraineté, c'est-à-dire une valeur supplémentaire liée à l'indépendance stratégique qui s'ajoute à la rentabilité purement financière du projet. La valeur brute que le gouvernement attribue à une mine en activité dépend du prix mondial de la MPC et du niveau du PIB national --- ce second facteur captant l'idée que plus l'économie est active, plus la valeur d'une production nationale sécurisée est grande.

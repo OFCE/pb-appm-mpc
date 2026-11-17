@@ -1,0 +1,41 @@
+iso3,pays,matiere,matiere_en,part,etape,part_mondiale
+NOR,Norvège,Silicium métal,Silicon metal,33,raffinage,FALSE
+FIN,Finlande,Nickel,Nickel,38,extraction,FALSE
+RUS,Russie,Palladium,Palladium,40,raffinage,TRUE
+POL,Pologne,Charbon à coke,Coking coal,27,extraction,FALSE
+POL,Pologne,Cuivre,Copper,19,extraction,FALSE
+BEL,Belgique,Arsenic,Arsenic,59,raffinage,FALSE
+FRA,France,Hafnium,Hafnium,76,raffinage,FALSE
+ESP,Espagne,Strontium,Strontium,99,extraction,FALSE
+MAR,Maroc,Roche phosphatée,Phosphate rock,27,extraction,FALSE
+TUR,Turquie,Antimoine,Antimony,63,extraction,FALSE
+TUR,Turquie,Borates,Boron,99,extraction,FALSE
+TUR,Turquie,Feldspath,Feldspar,51,extraction,FALSE
+QAT,Qatar,Hélium,Helium,35,raffinage,FALSE
+KAZ,Kazakhstan,Phosphore,Phosphorus,71,raffinage,FALSE
+KAZ,Kazakhstan,Titane métal,Titanium metal,36,raffinage,FALSE
+CHN,Chine,Baryte,Baryte,45,extraction,FALSE
+CHN,Chine,Bismuth,Bismuth,65,raffinage,FALSE
+CHN,Chine,Gallium,Gallium,71,raffinage,FALSE
+CHN,Chine,Germanium,Germanium,45,raffinage,FALSE
+CHN,Chine,Magnésium,Magnesium,97,raffinage,FALSE
+CHN,Chine,Graphite naturel,Natural graphite,40,extraction,FALSE
+CHN,Chine,Terres rares légères,LREE,85,raffinage,FALSE
+CHN,Chine,Terres rares lourdes,HREE,100,raffinage,FALSE
+CHN,Chine,Scandium,Scandium,67,raffinage,TRUE
+CHN,Chine,Tungstène,Tungsten,32,raffinage,FALSE
+CHN,Chine,Vanadium,Vanadium,62,extraction,TRUE
+USA,États-Unis,Béryllium,Beryllium,67,extraction,TRUE
+MEX,Mexique,Spath fluor,Fluorspar,33,extraction,FALSE
+GIN,Guinée,Bauxite,Aluminium (bauxite),63,extraction,FALSE
+COD,RD Congo,Cobalt,Cobalt,63,extraction,TRUE
+COD,RD Congo,Tantale,Tantalum,35,extraction,FALSE
+BRA,Brésil,Niobium,Niobium,92,raffinage,TRUE
+CHL,Chili,Lithium,Lithium,79,raffinage,FALSE
+ZAF,Afrique du Sud,Iridium,Iridium,93,raffinage,TRUE
+ZAF,Afrique du Sud,Palladium,Palladium,36,raffinage,TRUE
+ZAF,Afrique du Sud,Platine,Platinum,71,raffinage,TRUE
+ZAF,Afrique du Sud,Rhodium,Rhodium,81,raffinage,TRUE
+ZAF,Afrique du Sud,Ruthénium,Ruthenium,94,raffinage,TRUE
+ZAF,Afrique du Sud,Manganèse,Manganese,41,extraction,FALSE
+AUS,Australie,Charbon à coke,Coking coal,25,extraction,FALSE
