@@ -1,0 +1,1 @@
+Sitemap: https://staging.ofce.fr/pb-appm-mpc/v0/sitemap.xml
